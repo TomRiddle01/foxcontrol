@@ -39,14 +39,17 @@ class widget extends FoxControlPlugin {
 			$true = true;
 		
 			$widgetID = (int) $row->widgetid;
-			$this->userSettings[$args['Login']][$widgetID] = $this->widgets[$widgetID];
 			
-			$this->userSettings[$args['Login']][$widgetID]['style1'] = $row->style1;
-			$this->userSettings[$args['Login']][$widgetID]['substyle1'] = $row->substyle1;
-			$this->userSettings[$args['Login']][$widgetID]['style2'] = $row->style2;
-			$this->userSettings[$args['Login']][$widgetID]['substyle2'] = $row->substyle2;
-			$this->userSettings[$args['Login']][$widgetID]['PosX'] = $row->posx;
-			$this->userSettings[$args['Login']][$widgetID]['PosY'] = $row->posy;
+			if(isset($this->widgets[$widgetID])) {
+				$this->userSettings[$args['Login']][$widgetID] = $this->widgets[$widgetID];
+			
+				$this->userSettings[$args['Login']][$widgetID]['style1'] = $row->style1;
+				$this->userSettings[$args['Login']][$widgetID]['substyle1'] = $row->substyle1;
+				$this->userSettings[$args['Login']][$widgetID]['style2'] = $row->style2;
+				$this->userSettings[$args['Login']][$widgetID]['substyle2'] = $row->substyle2;
+				$this->userSettings[$args['Login']][$widgetID]['PosX'] = $row->posx;
+				$this->userSettings[$args['Login']][$widgetID]['PosY'] = $row->posy;
+			}
 		}
 		
 		if($true == false) {
@@ -207,7 +210,7 @@ class widget extends FoxControlPlugin {
 	/*
 		Save Widget
 	*/
-	public function saveWidget($widgetID, $mlid) {
+	public function saveWidget($widgetID, $mlid) {	
 		$this->fc_widget['MLID'] = $mlid;
 		
 		$this->widgets[$widgetID] = '';
@@ -257,12 +260,17 @@ class widget extends FoxControlPlugin {
 	/*
 		Create Code
 	*/
-	public function displayWidget($login, $mlid, $widgetID) {
+	public function displayWidget($login, $mlid, $widgetID, $removed = false) {
 		global $settings;
 		
+		if(!isset($this->userSettings[$login][$widgetID]['style1'])) {
+			$this->userSettings[$login][$widgetID] = $this->widgets[$widgetID];
+		}
+		
 		$widgetSettings = $this->userSettings[$login][$widgetID];
+		$this->widgets[$widgetID]['Removed'] = $removed;
 
-		if($widgetSettings['Enabled'] == true && $widgetSettings['GlobalEnabled'] == true) {
+		if($widgetSettings['Enabled'] == true && $widgetSettings['GlobalEnabled'] == true && $this->widgets[$widgetID]['Removed'] != true) {		
 			$sql = mysqli_query($this->db, "SELECT * FROM `widget_settings` WHERE playerlogin = '".$login."' AND widgetid = '".$widgetID."'");
 			if($row = $sql->fetch_object()) {
 				if($this->widgets[$widgetID]['PosX'] != $row->defaultPosX || $this->widgets[$widgetID]['PosY'] != $row->defaultPosY) {
@@ -312,7 +320,7 @@ class widget extends FoxControlPlugin {
 			}
 			
 			if($widgetSettings['UseIcon'] == true) {
-				$ml_display_code .= '<quad posn="'.(($posX - $sizeX / 2) + 0.3).' '.($posY - 0.6).' 4" sizen="2.3 2.3" style="'.$widgetSettings['Icon']['style'].'" substyle="'.$widgetSettings['Icon']['substyle'].'" />';
+				$ml_display_code .= '<quad posn="'.($posX - $sizeX / 2).' '.($posY - 0.6).' 4" sizen="2.3 2.3" style="'.$widgetSettings['Icon']['style'].'" substyle="'.$widgetSettings['Icon']['substyle'].'" />';
 			}
 			
 			if($widgetSettings['UseCode'] == true) {
@@ -334,12 +342,14 @@ class widget extends FoxControlPlugin {
 					<frame posn="'.$posX.' '.$posY.' 2">'.$widgetSettings['LoginCode'].'</frame>';
 				}
 			}
-			
+				
 			$ml_display_code .= $mlCode;
 		
 			$this->displayManialinkToLogin($login, $ml_display_code, $mlid);
 		} else {
-			$this->closeWidget($login, $widgetID, $mlid);
+			if($this->widgets[$widgetID]['Removed'] != true) {
+				$this->closeWidget($login, $widgetID, $mlid);
+			}
 		}
 	}
 	
@@ -370,7 +380,11 @@ class widget extends FoxControlPlugin {
 						$enabled = true;
 					}
 				
-					$this->displayWidget($args[1], $this->userSettings[$args[1]][$i]['MLID'], $i);
+					if($this->widgets[$i]['Removed'] == true) {
+						$this->displayWidget($args[1], $this->userSettings[$args[1]][$i]['MLID'], $i, true);
+					} else {
+						$this->displayWidget($args[1], $this->userSettings[$args[1]][$i]['MLID'], $i, false);
+					}
 				}
 			
 				if($enabled == false) {
@@ -495,6 +509,14 @@ class widget extends FoxControlPlugin {
 	}
 	
 	/*
+		Remove Widget
+	*/
+	public function remove($widgetID) {
+		$this->closeMl($this->widgets[$widgetID]['MLID']);
+		$this->widgets[$widgetID]['Removed'] = true;
+	}
+	
+	/*
 		Create Table
 	*/
 	public function createTable($widgetSettings) {
@@ -603,6 +625,10 @@ class widget extends FoxControlPlugin {
 			$sizey = $sizey + 2.5;
 		}
 		return $table;
+	}
+	
+	public function getWidgetList() {
+		return $this->widgets;
 	}
 }
 ?>

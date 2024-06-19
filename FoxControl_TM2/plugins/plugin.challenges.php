@@ -1,6 +1,6 @@
 <?php
 //* plugin.challenges.php - Maplist
-//* Version:   0.5
+//* Version:   1.1
 //* Coded by:  cyrilw, matrix142
 //* Copyright: FoxRace, http://www.fox-control.de
 
@@ -72,7 +72,7 @@ class plugin_challenges extends FoxControlPlugin {
 			
 				$this->chat($rights[1].' '.$nickname.'$z$s$f90 removed $fff'.$this->challenges[$challengeid]['Name'].'$z$s$f90!', 'f90');
 			
-				$this->instance()->client->query('RemoveChallenge', $challenge_filename);
+				$this->instance()->client->query('RemoveMap', $challenge_filename);
 				$removeChallenge = $this->instance()->client->getResponse();
 				
 				$this->writeChallenges();
@@ -94,7 +94,7 @@ class plugin_challenges extends FoxControlPlugin {
 		$this->challenges = array();
 		
 		//Get Challenge List
-		$this->instance()->client->query('GetChallengeList', 1000, 0);
+		$this->instance()->client->query('GetMapList', 1000, 0);
 		$challenge_list = $this->instance()->client->getResponse();
 		
 		for($i = 0; $i < count($challenge_list); $i++) {

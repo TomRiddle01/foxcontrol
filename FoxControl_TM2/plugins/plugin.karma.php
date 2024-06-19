@@ -111,7 +111,7 @@ class plugin_karma extends FoxControlPlugin {
 	public function getKarma() {
 		global $karmavote, $karma_count;
 	
-		$this->instance()->client->query('GetCurrentChallengeInfo');
+		$this->instance()->client->query('GetCurrentMapInfo');
 		$kar_challinfo = $this->instance()->client->getResponse();
 	
 		//Select Votes
@@ -157,7 +157,7 @@ class plugin_karma extends FoxControlPlugin {
 			$karma_code = str_replace('{VOTES}', 'Votes: '.$karma_count, $karma_code);
 			$karma_code = str_replace('{VOTE_AVERAGE}', $karmavote, $karma_code);
 			
-			$this->instance()->client->query('GetCurrentChallengeInfo');
+			$this->instance()->client->query('GetCurrentMapInfo');
 			$kar_challinfo = $this->instance()->client->getResponse();
 		
 			$sql = mysqli_query($this->db, "SELECT * FROM karma WHERE playerlogin = '".$login."' AND challengeid = '".$kar_challinfo['UId']."'");
@@ -195,7 +195,7 @@ class plugin_karma extends FoxControlPlugin {
 	
 	public function onManialinkPageAnswer($args) {
 		if($args[2] >= $this->mlids[0] && $args[2] <= $this->mlids[4]) {
-			$this->instance()->client->query('GetCurrentChallengeInfo');
+			$this->instance()->client->query('GetCurrentMapInfo');
 			$kar_challinfo = $this->instance()->client->getResponse();
 		
 			$this->instance()->client->query('GetDetailedPlayerInfo', $args[1]);

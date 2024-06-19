@@ -1,19 +1,22 @@
 //* Changelog
-//* Version:   1.0
+//* Version:   1.1
 //* Coded by:  matrix142, cyrilw, Libero, Jens
 //* Copyright: FoxRace, http://www.fox-control.de
 
 **************************
-*******v0.7 -> v1.0*******
+*******v1.0 -> v1.1*******
 **************************
-- Scriptsettings can be set ingame => Command: /scriptsettings
-- Added ignore/unignore function to ignore chat messages of Players
-- New plugin.ignorelist.php to get a list of all ignored players
-- Added spec/unspec button in Admin PlayerList
-- Fixed error in manager.plugins.php => Sometimes a crash when trying to activate/deactivate a plugin
-- Bug fix: plugin.topdons.php => TopDons were displayed the wrong order
-- Changes: plugin.records.php => Little adaptions
-- Changes: plugin.currentchallenge.php => Little adaptions
-- Changes: plugin.adminpanel.php => Little adaptions
-- Changes: chat.admin.php => Little adaptions
-- Changes: plugin.scorepanel.php => Little adaptions
+- New Plugin: plugin.mostactive.php => Displays a list of mostactive players like in the scorepanel
+- New Plugin: plugin.bestmaps.php => Displays a list of the best voted maps
+- New Plugin: plugin.widgetsettings.php => Manage your widgets
+- Updated Core and all Plugins to API Version 2012-06-19
+- Fixed bug: Wrong time of LiveRankings
+- Fixed bug: Wrong sort of LiveRankings
+- Fixed bug: Mysql Timeout
+- Fixed bug: Playerlist did not open when Nicknames included special chars
+- New, better Menu structure:
+	- Added MostActive Button to the Menu
+	- Added TopDons Button to the Menu
+	- Added BestMaps Button to the Menu
+	- Added GameMode Buttons to the Admin Menu
+- Added Connections count and timeplayed row in Playerlist

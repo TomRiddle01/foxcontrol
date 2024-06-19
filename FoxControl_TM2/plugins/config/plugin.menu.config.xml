@@ -1,7 +1,28 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<config>
+<config>	
 	<!-- SET HERE THE POSN OF THE WIDGET -->
-	<posn_menu_button>59 19.5</posn_menu_button>
-	<posn_menu>35.3 21.4</posn_menu>
+	<posns>
+		<!-- POSN OF THE MENU BUTTON -->
+		<button>
+			<rounds>59 19.5</rounds> 			<!-- ROUNDS -->
+			<timeattack>59 19.5</timeattack> 	<!-- TIMEATTACK -->
+			<team>59 19.5</team> 				<!-- TEAM -->
+			<laps>59 19.5</laps> 				<!-- LAPS -->
+			<cup>59 19.5</cup> 				<!-- CUP -->
+			<stunts>59 19.5</stunts> 			<!-- STUNTS -->
+			<Platform>59 19.5</Platform> 		<!-- PLATFORM -->
+		</button>
+		
+		<!-- POSN OF THE MENU -->
+		<menu>
+			<rounds>35.3 21.4</rounds> 			<!-- ROUNDS -->
+			<timeattack>35.3 21.4</timeattack> 	<!-- TIMEATTACK -->
+			<team>35.3 21.4</team> 				<!-- TEAM -->
+			<laps>35.3 21.4</laps> 				<!-- LAPS -->
+			<cup>35.3 21.4</cup> 				<!-- CUP -->
+			<stunts>35.3 21.4</stunts> 			<!-- STUNTS -->
+			<Platform>35.3 21.4</Platform> 		<!-- PLATFORM -->
+		</menu>
+	</posns>
 </config>
 	

@@ -44,10 +44,10 @@ class plugin_currentchallenge extends FoxControlPlugin {
 
 		$posn = explode(' ', $this->config->posn);
 		
-		$this->instance()->client->query('GetCurrentChallengeInfo');
+		$this->instance()->client->query('GetCurrentMapInfo');
 		$currentChallenge = $this->instance()->client->getResponse();
 		
-		$this->instance()->client->query('GetNextChallengeInfo');
+		$this->instance()->client->query('GetNextMapInfo');
 		$nextChallenge = $this->instance()->client->getResponse();
 		
 		$code = '

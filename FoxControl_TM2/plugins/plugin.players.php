@@ -1,6 +1,6 @@
 <?php
 //* plugin.players.php - Playerlist
-//* Version:   1.0
+//* Version:   0.6
 //* Coded by:  matrix142
 //* Copyright: FoxRace, http://www.fox-control.de
 
@@ -11,7 +11,7 @@ class plugin_players extends FoxControlPlugin {
 	public function onStartUp() {
 		$this->name = 'Playerlist';
 		$this->author = 'matrix142';
-		$this->version = '1.0';
+		$this->version = '0.6';
 		
 		$this->registerCommand('players', 'Shows the Player list.', false);
 		$this->registerCommand('admins', 'Shows a list of the admins. $s/admins <all|ops|admins|superadmins>$s', false);
@@ -38,7 +38,7 @@ class plugin_players extends FoxControlPlugin {
 	}
 	
 	public function onManialinkPageAnswer($args) {
-		global $playerList;
+		global $playerList, $type_list;
 	
 		//ADMIN ACTIONS
 		if($args[2] >= $this->mlids[0] && $args[2] <= $this->mlids[124]) {			
@@ -70,7 +70,7 @@ class plugin_players extends FoxControlPlugin {
 				$pageID = $pageID * 25;
 				$playerID = ($args[2] - $this->mlids[$min] + $pageID);
 				
-				if($playerList[$playerID]['IsSpectator'] == 1) {
+				if($playerList[$playerID]['SpectatorStatus'] != 0) {
 					$action = 'forceplayer';
 				} else {
 					$action = 'forcespec';
@@ -108,7 +108,7 @@ class plugin_players extends FoxControlPlugin {
 		$type_list = $type;
 	
 		//DISPLAY PLAYERLIST
-		if($type == 'players' OR $type == 'admin') {
+		if($type == 'players' OR $type == 'admin') {		
 			//GET PLAYER LIST
 			$this->instance()->client->query('GetPlayerList', 200, 0);
 			$playerList = $this->instance()->client->getResponse();
@@ -122,7 +122,7 @@ class plugin_players extends FoxControlPlugin {
 			$window = $this->window;
 			$window->init();
 			
-			$window->title('Player List');
+			$window->title('Current Players');
 			
 			$window->displayAsTable(true);
 			$window->size(70, '');
@@ -161,7 +161,7 @@ class plugin_players extends FoxControlPlugin {
 			if($admin == true AND $type == 'admin') {
 				$window->content('<td width="3">$iID</td><td width="20">$iNickName</td><td width="12">$iLogin</td><td width="30">$iActions</td>');
 			}else {
-				$window->content('<td width="3">$iID</td><td width="25">$iNickName</td><td width="20">$iLogin</td><td width="15">$iLadder Rank</td>');
+				$window->content('<td width="3">$iID</td><td width="15">$iNickName</td><td width="10">$iLogin</td><td width="10">$iPlayed</td><td width="10">$iConnections</td><td width="10">$iLadder Rank</td><td width="10">$iNation</td>');
 			}
 		
 			for($i=0; isset($playerList[$currentID]) && $i<25; $i++) {
@@ -173,17 +173,36 @@ class plugin_players extends FoxControlPlugin {
 					$blackID = $this->mlids[75] + $i;
 					$specID = $this->mlids[100] + $i;
 					
-					if($playerList[$currentID]['IsSpectator'] == 1) {
+					if($playerList[$currentID]['SpectatorStatus'] != 0) {
 						$spec = 'ForcePlayer';
 					} else {
 						$spec = 'ForceSpectator';
 					}
 					
-					$window->content('<td width="3">'.($currentID + 1).'</td><td width="20">'.$playerList[$currentID]['NickName'].'</td><td width="12">'.$playerList[$currentID]['Login'].'</td><td width="6" id="'.$warnID.'" align="center">Warn</td><td width="6" id="'.$kickID.'" align="center">Kick</td><td width="6" id="'.$banID.'" align="center">Ban</td><td width="6.5" id="'.$blackID.'" align="center">Blacklist</td><td width="6.5" id="'.$specID.'">'.$spec.'</td>');
+					if($playerList[$currentID]['Login'] != $settings['ServerLogin']) {
+						$window->content('<td width="3">'.($currentID).'</td><td width="20">'.htmlspecialchars($playerList[$currentID]['NickName']).'</td><td width="12">'.$playerList[$currentID]['Login'].'</td><td width="6" id="'.$warnID.'" align="center">Warn</td><td width="6" id="'.$kickID.'" align="center">Kick</td><td width="6" id="'.$banID.'" align="center">Ban</td><td width="6.5" id="'.$blackID.'" align="center">Blacklist</td><td width="8" id="'.$specID.'">'.$spec.'</td>');
+					}
 				}
 				//FOR PLAYERS
 				else {
-					$window->content('<td width="3">'.($currentID + 1).'</td><td width="25">'.$playerList[$currentID]['NickName'].'</td><td width="20">'.$playerList[$currentID]['Login'].'</td><td width="15">'.$playerList[$currentID]['LadderRanking'].'</td>');
+					if($playerList[$currentID]['Login'] != $settings['ServerLogin']) {
+						$this->instance()->client->query('GetDetailedPlayerInfo', $playerList[$currentID]['Login']);
+						$playerInfo = $this->instance()->client->getResponse();
+						$country = explode('|', $playerInfo['Path']);
+					
+						$sql = mysqli_query($this->db, "SELECT * FROM `players` WHERE playerlogin = '".$playerList[$currentID]['Login']."'");
+						if($row = $sql->fetch_object())
+					
+						if($this->instance()->formattime_hour($row->timeplayed) != 0) {
+							$time = $this->instance()->formattime_hour($row->timeplayed);
+						} else if($this->instance()->formattime_minute($row->timeplayed) != 0) {
+							$time = $this->instance()->formattime_minute($row->timeplayed);
+						} else {
+							$time = '0min';
+						}
+					
+						$window->content('<td width="3">'.($currentID).'</td><td width="15">'.htmlspecialchars($playerList[$currentID]['NickName']).'</td><td width="10">'.$playerList[$currentID]['Login'].'</td><td width="10">'.$time.'</td><td width="10">'.$row->connections.'</td><td width="10">'.$playerList[$currentID]['LadderRanking'].'</td><td width="10">'.$country[1].'</td>');
+					}
 				}
 				
 				$currentID++;

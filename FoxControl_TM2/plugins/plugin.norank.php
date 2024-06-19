@@ -44,7 +44,7 @@ public $challenges = array();
 		$this->challenges = array();
 		
 		//Get Challenge List
-		$this->instance()->client->query('GetChallengeList', 1000, 0);
+		$this->instance()->client->query('GetMapList', 1000, 0);
 		$challenge_list = $this->instance()->client->getResponse();
 		
 		for($i = 0; $i < count($challenge_list); $i++) {

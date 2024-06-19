@@ -324,12 +324,16 @@ class window extends FoxControlPlugin
 			}
 		}
 	}
+	
 	private function createTable()
 	{
-		global $fc_window;
+		global $fc_window, $settings;
+		
 		$table = '';
 		$posy = $fc_window['PosY'] - 3.5;
 		$sizey = 0;
+		$run = 0;
+		
 		for($i = 0; isset($fc_window['Content'][$i]); $i++) //For every line
 		{
 			$td = explode('<td', $fc_window['Content'][$i]);
@@ -395,14 +399,31 @@ class window extends FoxControlPlugin
 				$text = str_replace('id=\''.$link.'\' ', '', $text);
 				$text = str_replace('id=\''.$link.'\'', '', $text);
 				$text = str_replace('</td>', '', $text);
-				if($align_center == true) $table .= '<label posn="'.($posx+(($width)/2)).' '.$posy.' 2" sizen="'.($width - 0.5).' 2" textsize="'.$fc_window['FontSize'].'" halign="center" text="$fff'.$text.'"/>';
-				else $table .= '<label posn="'.$posx.' '.$posy.' 2" sizen="'.($width - 0.5).' 2" textsize="'.$fc_window['FontSize'].'" text="$fff'.$text.'"/>';
-				if(trim($link) !== '') $table .= '<quad posn="'.$posx.' '.$posy.' 1" sizen="'.$width.' 2.25" style="'.$fc_window['TableLink']['Style'].'" substyle="'.$fc_window['TableLink']['SubStyle'].'" action="'.$link.'"/>';
+				
+				if($align_center == true) {
+					$table .= '<label posn="'.($posx+(($width)/2)).' '.$posy.' 2" sizen="'.($width - 0.5).' 2" textsize="'.$fc_window['FontSize'].'" halign="center" text="$fff'.$text.'"/>';
+				} else {
+					$table .= '<label posn="'.$posx.' '.$posy.' 2" sizen="'.($width - 0.5).' 2" textsize="'.$fc_window['FontSize'].'" text="$fff'.$text.'"/>';
+				}
+				
+				if(trim($link) !== '') {
+					$table .= 	'<quad posn="'.($posx - 0.125).' '.$posy.' 1" sizen="'.$width.' 2" style="'.$fc_window['TableLink']['Style'].'" substyle="'.$fc_window['TableLink']['SubStyle'].'" action="'.$link.'"/>
+								 <quad posn="'.($posx - 0.125).' '.$posy.' 2" sizen="'.$width.' 2" style="BgsPlayerCard" substyle="BgCardSystem" action="'.$link.'"/>';
+				}
+				
+				if($run > 0) {
+					$run = -1;
+					$table .= '<quad posn="'.($posx - 0.5).' '.($posy + 0.125).' 0" sizen="'.($fc_window['SizeX'] - 0.75).' 2.25" style="'.$settings['default_style1'].'" substyle="'.$settings['default_substyle1'].'" />';
+				}
+				
 				$posx = $posx + $width;
 			}
+			
 			$posy = $posy - ($fc_window['FontSize'] + 0.5);
 			$sizey = $sizey + 2.5;
+			$run++;
 		}
+		
 		return $table;
 	}
 }

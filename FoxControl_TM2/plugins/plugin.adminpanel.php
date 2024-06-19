@@ -103,7 +103,7 @@ class plugin_adminpanel extends FoxControlPlugin {
 			if($restart_challenge==true){
 				global $chall_restarted_admin;
 				$chall_restarted_admin = true;
-				$this->instance()->client->query('RestartChallenge');
+				$this->instance()->client->query('RestartMap');
 				$this->chat($rights[1].' $fff'.$Admin['NickName'].'$z$s $f90restarted the map!', 'f90');
 			}
 			else $this->chatToLogin($Admin['Login'], $settings['Text_wrong_rights']);

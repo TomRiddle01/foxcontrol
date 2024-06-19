@@ -14,7 +14,7 @@ class plugin_newsupdate extends FoxControlPlugin {
 	}
 
 	public function getFile() {
-		$fp = fsockopen("www.fox-control.de", 80, $errno, $errstr, 5);
+		$fp = fsockopen("www.global-rebels.de", 80, $errno, $errstr, 5);
 	
 		if (!$fp) {
 			console('!!!FOXCONTROL MASTERSERVER ERROR!!!');
@@ -22,7 +22,8 @@ class plugin_newsupdate extends FoxControlPlugin {
 		} else {
 			fwrite($fp, "GET / HTTP/1.1\r\n");
 		
-			$content = simplexml_load_file('http://scripts.fox-control.de/newsupdate/newsupdate.xml');
+			//$content = simplexml_load_file('http://scripts.fox-control.de/newsupdate/ShootMania/newsupdate.xml');
+			$content = simplexml_load_file('http://fox.global-rebels.de/newsupdate/ShootMania/newsupdate.xml');
 			return $content;
 		}
 	}

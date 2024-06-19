@@ -11,12 +11,12 @@ class plugin_cpcounter extends FoxControlPlugin {
 	public function onStartUp() {
 		$this->registerMLIds(1);
 		
-		$this->instance()->client->query('GetCurrentChallengeInfo');
+		$this->instance()->client->query('GetCurrentMapInfo');
 		$this->challengeInfo = $this->instance()->client->getResponse();
 	}
 	
 	public function onBeginChallenge($args) {		
-		$this->instance()->client->query('GetCurrentChallengeInfo');
+		$this->instance()->client->query('GetCurrentMapInfo');
 		$this->challengeInfo = $this->instance()->client->getResponse();
 	}
 	

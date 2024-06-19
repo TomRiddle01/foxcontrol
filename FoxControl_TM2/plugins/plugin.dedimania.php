@@ -1,6 +1,6 @@
 <?php
 //* plugin.dedimania.php - Dedimania
-//* Version:   0.6
+//* Version:   1.0
 //* Coded by:  slig, matrix142
 //* Copyright: FoxRace, http://www.fox-control.de
 
@@ -47,7 +47,7 @@ class plugin_dedimania extends FoxControlPlugin {
 		
 		$this->name = 'Dedimania';
 		$this->author = 'Slig & matrix142';
-		$this->version = '0.6';
+		$this->version = '1.0';
 		
 		$this->registerMLIds(1);
 		$this->registerWidgets(1);
@@ -116,8 +116,8 @@ class plugin_dedimania extends FoxControlPlugin {
 		$this->_srvinfo = $this->instance()->client->getResponse();
 		$this->_dm['Path'] = $this->_srvinfo['Path'];
 	
-		$this->instance()->client->query('GetServerPackMask');
-		$this->_dm['PackMask'] = $this->instance()->client->getResponse();
+		//$this->instance()->client->query('GetServerPackMask');
+		$this->_dm['PackMask'] = 'Canyon';
 	
 		$this->instance()->client->query('GetVersion');
 		$version = $this->instance()->client->getResponse();
@@ -132,7 +132,7 @@ class plugin_dedimania extends FoxControlPlugin {
 		console('******** (Dedimania) ********'.nz);
 
 		// get mapinfo at start, after we will get it in dedicated callbacks
-		$this->instance()->client->query('GetCurrentChallengeInfo');
+		$this->instance()->client->query('GetCurrentMapInfo');
 		$MapInfo = $this->instance()->client->getResponse();
 
 		// simulate initial onPlayerConnect

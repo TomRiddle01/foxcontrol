@@ -26,7 +26,9 @@ class plugin_records extends FoxControlPlugin {
 		$this->author = 'matrix142';
 		$this->version = '0.6';
 		
-		$this->registerCommand('records', 'Shows the Local record list', false);
+		$this->registerCommand('records', 'Shows the Local Records list', false);
+		$this->registerCommand('liveranks', 'Shows the Live Rankings list', false);
+		
 		$this->registerMLIds(30);
 		$this->registerWidgets(2);
 		
@@ -122,7 +124,7 @@ class plugin_records extends FoxControlPlugin {
 		//Writing the local records to the global array
 		$this->recsArray = array();
 		
-		$this->instance()->client->query("GetCurrentChallengeInfo");
+		$this->instance()->client->query("GetCurrentMapInfo");
 		$challengeinfo = $this->instance()->client->getResponse();
 		
 		$sql = "SELECT * FROM `records` WHERE challengeid = '".$challengeinfo['UId']."' ORDER BY time ASC LIMIT ".$this->maxRecs."";
@@ -160,7 +162,7 @@ class plugin_records extends FoxControlPlugin {
 		global $settings, $_Dedimania_recs, $posn_local;
 		
 		//Write local records
-		$this->instance()->client->query('GetCurrentChallengeInfo');
+		$this->instance()->client->query('GetCurrentMapInfo');
 		$records_challenge_info = $this->instance()->client->getResponse();
 		
 		$this->instance()->client->query('GetDetailedPlayerInfo', $PlayerFinish[1]);
@@ -187,15 +189,17 @@ class plugin_records extends FoxControlPlugin {
 			
 			//Write Live Rankings
 			if($isInLiveArray == true) {
-				if($PlayerFinish[0] < $this->liveRankings[$liveArrayKey]['time']) {
-					$this->liveRankings[$liveArrayKey]['time'] = $PlayerFinish[0];
+				if($PlayerFinish[2] < $this->liveRankings[$liveArrayKey]['time']) {
+					$this->liveRankings[$liveArrayKey]['time'] = $PlayerFinish[2];
 					uasort($this->liveRankings, 'compareTimeArrays');
+					$this->liveRankings =  $this->sortArray($this->liveRankings);
 					
 					$newLive = true;
 				}
 			} else {
-				$this->liveRankings[] = array('Login' => $PlayerFinish[1], 'time' => $PlayerFinish[0], 'NickName' => $player_info['NickName']);
+				$this->liveRankings[] = array('Login' => $PlayerFinish[1], 'time' => $PlayerFinish[2], 'NickName' => $player_info['NickName']);
 				uasort($this->liveRankings, 'compareTimeArrays');
+				$this->liveRankings =  $this->sortArray($this->liveRankings);
 				
 				$newLive = true;
 			}
@@ -509,6 +513,8 @@ class plugin_records extends FoxControlPlugin {
 	public function onCommand($args) {
 		if($args[2] == 'records') {
 			$this->onManialinkPageAnswer(array(1 => $args[1], 2 => $this->mlids[0]));
+		} else if($args[2] == 'liveranks') {
+			$this->onManialinkPageAnswer(array(1 => $args[1], 2 => $this->mlids[1]));
 		}
 	}	
 	

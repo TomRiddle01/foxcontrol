@@ -31,7 +31,7 @@ $multiplier = 7;             // Number to multiply authortime by.
 public function onEndRace($args) {
 global $mintime, $maxtime, $multiplier;
 	// get next game settings
-	$this->instance()->client->query('GetNextChallengeInfo');
+	$this->instance()->client->query('GetNextMapInfo');
 	$nextgame = $this->instance()->client->getResponse();
 	$nexttime = intval($nextgame['AuthorTime']);
 console ($nexttime);

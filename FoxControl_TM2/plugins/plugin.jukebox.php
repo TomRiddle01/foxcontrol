@@ -24,13 +24,13 @@ class plugin_jukebox extends FoxControlPlugin {
 		global $jukebox;
 		for($i = 0; $i < count($jukebox); $i++) {
 			if($jukebox[$i]['played'] === 'false'){
-				$this->instance()->client->query('GetChallengeInfo', $jukebox[$i]['fileName']);
+				$this->instance()->client->query('GetMapInfo', $jukebox[$i]['fileName']);
 				$challenge = $this->instance()->client->getResponse();
 				
 				$this->instance()->client->query('GetDetailedPlayerInfo', $jukebox[$i]['login']);
 				$player = $this->instance()->client->getResponse();
 				
-				$this->instance()->client->query('ChooseNextChallenge', $challenge['FileName']);
+				$this->instance()->client->query('ChooseNextMap', $challenge['FileName']);
 				
 				$jukebox[$i]['played'] = true;
 				$this->chat('Next Map will be $fff'.$challenge['Name'].'$z$s$0e0. Juked by: $z'.$player['NickName'].'$z$s$0e0!', '0e0');
@@ -138,11 +138,11 @@ class plugin_jukebox extends FoxControlPlugin {
 		} else if($isjuked == true) {
 			$this->chatToLogin($jukedplayer['Login'], 'This Map is already juked!', 'f90');
 		} else {
-			$this->instance()->client->query('GetChallengeInfo', $fileName);
+			$this->instance()->client->query('GetMapInfo', $fileName);
 			$jukedchallenge = $this->instance()->client->getResponse();
 			if(!isset($jukedchallenge['Name']) || trim($jukedchallenge['Name']) == '') {
-				$this->chatToLogin($jukedplayer['Login'], 'Challenge not found!', 'f90');
-				console('[WARNING] [plugin.jukebox.php] Challenge \''.$fileName.'\' not found!');
+				$this->chatToLogin($jukedplayer['Login'], 'Map not found!', 'f90');
+				console('[WARNING] [plugin.jukebox.php] Map \''.$fileName.'\' not found!');
 				return;
 			}
 			$jukebox[] = array('played' => 'false', 'fileName' => $fileName, 'mapName' => $jukedchallenge['Name'], 'login' => $jukedplayer['Login'], 'nick' => $jukedplayer['NickName']);

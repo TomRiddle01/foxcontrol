@@ -198,7 +198,7 @@ class plugin_scorepanel extends FoxControlPlugin {
 		
 		//NEXT TRACK
 		if($this->posn_nexttrack != 'false') {
-			$this->instance()->client->query('GetNextChallengeInfo');
+			$this->instance()->client->query('GetNextMapInfo');
 			$nca = $this->instance()->client->getResponse();
 			
 			$code_nexttrack = '

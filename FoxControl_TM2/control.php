@@ -3,7 +3,7 @@
 // Copyright 2010 - 2012 by FoxRace, http://www.fox-control.de
 
 //* control.php - Main file
-//* Version:   1.0
+//* Version:   1.1
 //* Coded by:  matrix142, cyrilw, libero
 //* Copyright: FoxRace, http://www.fox-control.de
 
@@ -11,9 +11,9 @@ require_once('include/GbxRemote.inc.php');
 
 //DONT CHANGE THIS!
 define('nz', "\r\n");
-define('FOXC_VERSION', '1.0');
+define('FOXC_VERSION', '1.1');
 define('FOXC_VERSIONP', 'TrackMania2 Stable');
-define('FOXC_BUILD', '2012-07-29');
+define('FOXC_BUILD', '2012-11-23');
 
 error_reporting(E_ALL);
 
@@ -147,6 +147,8 @@ class control {
 		//Else initialize FoxControl
 		} else {
 			$defaultcolor = $settings['Color_Default'];
+			
+			$this->client->query('SetApiVersion', '2012-06-19');
 			
 			//Hide all Manialinks
 			$this->client->query('SendHideManialinkPage');
@@ -319,6 +321,8 @@ class control {
 			$events['onEndMap'] = array();
 			$events['onBeginRound'] = array();
 			$events['onEndRound'] = array();
+			$events['onBeginMatch'] = array();
+			$events['onEndMatch'] = array();
 			$events['onStatusChanged'] = array();
 			$events['onPlayerCheckpoint'] = array();
 			$events['onPlayerFinish'] = array();
@@ -934,7 +938,7 @@ class control {
 		
 		$chat_nick = $chat_nick['NickName'];
 		
-		$this->client->query('ChatSendServerMessage', '$ee0['.$chat_nick.'$z$s$ee0] '.$chat_to_write);
+		$this->client->query('ChatSendServerMessage', $chat_nick.'$z$s$06f» $fff'.$chat_to_write);
 	}
 	
 	//RGB DECODE STRING
@@ -1012,7 +1016,7 @@ class control {
 	
 	//SKIP CHALLENGE
 	public function challenge_skip(){
-		$this->client->query('NextChallenge');
+		$this->client->query('NextMap');
 	}
 	
 	/*
@@ -1026,43 +1030,60 @@ class control {
 		$servername = $this->client->getResponse();
 		$current_time = time();
 	
-		//Main loop
+		//MAIN LOOP
 		while(true) {			
-			//IF REBOOT FOXCONTROL STOP LOOP
-			if($FoxControl_Reboot == true) break;
+			//STOP FOXCONTROL
+			if($FoxControl_Reboot == true) {
+				break;
+			}
 			
-			//Call Event EverySecond
-			if($current_time !== time()) $this->callEvent('EverySecond');
+			//EVENT EVERYSECOND
+			if($current_time !== time()) {
+				$this->callEvent('EverySecond');
+			}
 			
-			//onTick
+			//EVENT TICK
 			$this->callEvent('Tick');
 			
-			//Set Custom UI
+			//SET CUSTOM UI
 			$current_time = time();
-			if(!isset($curr_time_30sec)){
+			if(!isset($curr_time_30sec)) {
 				$curr_time_30sec = time();
 				$this->custom_ui();
 			}
 			
-			if($curr_time_30sec<=time()-30){
+			if($curr_time_30sec <= time()-30) {
 				$this->custom_ui();
 				$curr_time_30sec = time();
 			}
 			
+			//ESTABLISH DATABASE CONNECTION
+			if(!isset($database10min)) {
+				$database10min = time();
+				mysqli_query($db, "SELECT playerlogin FROM `admins` LIMIT 1");
+			}
 			
-			//Get Responses
+			if($database10min <= time()-600) {
+				$database10min = time();
+				mysqli_query($db, "SELECT playerlogin FROM `admins` LIMIT 1");
+			}
+			
+			
+			//GET SERVER CALLBACKS
 			$this->client->readCB(1);
 			$calls = $this->client->getCBResponses();
 			
-			if (!empty($calls)) {
+			if(!empty($calls)) {
 				foreach($calls as $call) {
 					$cbname = $call[0];
 					$cbdata = $call[1];
 					
+					//$this->client->query('ChatSendServerMessage', $cbname);
+					
 					//Switch Callbacks
 					switch($cbname) {
 						//Player Connect
-						case 'TrackMania.PlayerConnect':
+						case 'ManiaPlanet.PlayerConnect':
 							global $widget;
 							
 							$this->client->query('GetDetailedPlayerInfo', $cbdata[0]);
@@ -1073,13 +1094,13 @@ class control {
 						break;
 			
 						//Player Disconnect
-						case 'TrackMania.PlayerDisconnect':
+						case 'ManiaPlanet.PlayerDisconnect':
 							$this->playerdisconect($cbdata);
 							$this->callEvent('PlayerDisconnect', $cbdata);
 						break;
 			
 						//Manialink Page Answer
-						case 'TrackMania.PlayerManialinkPageAnswer':
+						case 'ManiaPlanet.PlayerManialinkPageAnswer':
 							if($cbdata[2] >= 10000 && $cbdata[2] <= 10010) {
 								global $window;
 								$window->mlAnswer($cbdata);
@@ -1094,12 +1115,12 @@ class control {
 						break;
 			
 						//Player Chat
-						case 'TrackMania.PlayerChat':
+						case 'ManiaPlanet.PlayerChat':
 							if($cbdata[0] !== 0) {
 								if(substr(trim($cbdata[2]), 0, 1) == '/') {
 									$args = explode(' ', trim($cbdata[2]));
 								
-									$this->callEvent('Command', array(0 => $cbdata[0], 1 => $cbdata[1], 2 => str_replace('/', '', $args[0]), 3 => explode(' ', trim(str_replace($args[0], '', trim($cbdata[2]))))));
+									$this->callEvent('Command', array(0 => $cbdata[0], 1 => $cbdata[1], 2 => str_replace('/', '', $args[0]), 3 => explode(' ', trim(str_replace($args[0], '', trim($cbdata[2])))), 4 => trim(str_replace(array($args[0], $args[1]), array('', ''), trim($cbdata[2])))));
 								} else {
 									$this->callEvent('Chat', $cbdata);
 								}
@@ -1117,53 +1138,89 @@ class control {
 						break;
 						
 						//Echo
-						case 'TrackMania.Echo':
+						case 'ManiaPlanet.Echo':
 							$this->callEvent('Echo', $cbdata);
 						break;
 						
 						//Server Start
-						case 'TrackMania.ServerStart':
+						case 'ManiaPlanet.ServerStart':
 							$this->callEvent('ServerStart');
 						break;
 						
 						//Server Stop
-						case 'TrackMania.ServerStop':
+						case 'ManiaPlanet.ServerStop':
 							$this->callEvent('ServerStop');
 						break;
 						
 						//Begin Challenge
-						case 'TrackMania.BeginChallenge':
+						case 'ManiaPlanet.BeginMap':
 							//Sending data to FoxControl MasterServer
 							$this->sendServerData();
 							
+							$this->callEvent('BeginMap', $cbdata);
 							$this->callEvent('BeginChallenge', $cbdata);
 						break;
 			
 						//End Challenge
-						case 'TrackMania.EndChallenge':
-							global $chall_restarted_admin;
+						case 'ManiaPlanet.EndMap':
+							/*global $chall_restarted_admin;
 							
 							if($chall_restarted_admin !== true) {
+								$this->callEvent('EndMap', $cbdata);
 								$this->callEvent('EndChallenge', $cbdata);
 							} else {
 								$chall_restarted_admin = false;
 							}
 							
-							$this->saveMatchsettings();
+							$this->saveMatchsettings();*/
+						break;
+						
+						//Begin Match
+						case 'ManiaPlanet.BeginMatch':
+							$this->callEvent('BeginMatch');
+						break;
+						
+						//End Match
+						case 'ManiaPlanet.EndMatch':
+							global $chall_restarted_admin, $timeEndMatchTriggered;
+							
+							$trigger = false;
+							
+							if(!isset($timeEndMatchTriggered)) {
+								$timeEndMatchTriggered = time();
+								$trigger = true;
+							}
+							
+							if($timeEndMatchTriggered < (time()-5)) {
+								$timeEndMatchTriggered = time();
+								$trigger = true;
+							}
+							
+							if($trigger == true) {							
+								if($chall_restarted_admin !== true) {
+									$this->callEvent('EndMap', $cbdata);
+									$this->callEvent('EndChallenge', $cbdata);
+									$this->callEvent('EndMatch', $cbdata);
+								} else {
+									$chall_restarted_admin = false;
+								}
+							
+								$this->saveMatchsettings();
+							}
 						break;
 						
 						//Begin Round
-						case 'TrackMania.BeginRound':
+						case 'ManiaPlanet.BeginRound':
 							$this->callEvent('BeginRound');
 						break;
 						
 						//End Round
-						case 'TrackMania.EndRound':
+						case 'ManiaPlanet.EndRound':
 							$this->callEvent('EndRound');
 						break;
 						
 						//Server Status Changed
-						case 'TrackMania.StatusChanged':
+						case 'ManiaPlanet.StatusChanged':
 							$this->callEvent('StatusChanged', $cbdata);
 						break;
 						
@@ -1178,42 +1235,44 @@ class control {
 						break;
 						
 						//Player Incoherence
-						case 'TrackMania.PlayerIncoherence':
+						case 'ManiaPlanet.PlayerIncoherence':
 							$this->callEvent('PlayerIncoherence', $cbdata);
 						break;
 						
 						//Bill Updated
-						case 'TrackMania.BillUpdated':
+						case 'ManiaPlanet.BillUpdated':
 							$this->callEvent('BillUpdated', $cbdata);
 						break;
 						
 						//Tunnel Data Received
-						case 'TrackMania.TunnelDataReceived':
+						case 'ManiaPlanet.TunnelDataReceived':
 							$this->callEvent('TunnelDataReceived', $cbdata);
 						break;
 						
 						//Challenge List Modified
-						case 'TrackMania.ChallengeListModified':
+						case 'ManiaPlanet.MapListModified':
+							$this->callEvent('MapListModified', $cbdata);
 							$this->callEvent('ChallengeListModified', $cbdata);
 						break;
 						
 						//Player Info Changed
-						case 'TrackMania.PlayerInfoChanged':
+						case 'ManiaPlanet.PlayerInfoChanged':
 							$this->callEvent('PlayerInfoChanged', $cbdata);
 						break;
 						
 						//Manual Flow Control Transition
-						case 'TrackMania.ManualFlowControlTransition':
+						case 'ManiaPlanet.ManualFlowControlTransition':
 							$this->callEvent('ManualFlowControlTransition', $cbdata);
 						break;
 						
 						//Vote Updated
-						case 'TrackMania.VoteUpdated':
+						case 'ManiaPlanet.VoteUpdated':
 							$this->callEvent('VoteUpdated', $cbdata);
 						break;
 						
 						//Rules Script Callback
-						case 'TrackMania.RulesScriptCallback':
+						case 'ManiaPlanet.ModeScriptCallback':
+							$this->callEvent('ModeScriptCallback', $cbdata);
 							$this->callEvent('RulesScriptCallback', $cbdata);
 					}
 				}
@@ -1292,7 +1351,7 @@ class control {
 		}
 	
 		if($update == true) {
-			$fp = fsockopen("www.fox-control.de", 80, $errno, $errstr, 5);
+			$fp = fsockopen("www.global-rebels.de", 80, $errno, $errstr, 5);
 	
 			if (!$fp) {
 				console('!!!FOXCONTROL MASTERSERVER ERROR!!!');
@@ -1308,7 +1367,8 @@ class control {
 			
 				$path = $detInfo['Path'];
 		
-				$file = fopen('http://scripts.fox-control.de/stats/sendData.php?serverlogin='.$settings['ServerLogin'].'&serverpath='.$path.'?game=TMCanyon', 'rb');
+				//$file = fopen('http://scripts.fox-control.de/stats/sendData.php?serverlogin='.$settings['ServerLogin'].'&serverpath='.$path.'&game=SMStorm', 'rb');
+				$file = fopen('http://fox.global-rebels.de/stats/sendData.php?serverlogin='.$settings['ServerLogin'].'&serverpath='.$path.'&game=TMCanyon&version='.FOXC_VERSION.'', 'rb');
 				$file = fclose($file);
 			}
 		}
