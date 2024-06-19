@@ -27,4 +27,5 @@
 	<!-- <plugin>plugin.music.php</plugin> -->
 	<plugin>plugin.infomessage.php</plugin>
 	<!-- <plugin>plugin.serverswitch.php</plugin> --> <!-- READ THE INSTRUCTIONS IN plugins/config/plugin.serverswitch.config.xml -->
+	<plugin>plugin.ignorelist.php</plugin>
 </plugins>

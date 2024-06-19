@@ -61,8 +61,8 @@ class manager_plugins extends FoxControlPlugin {
 				$window->init();
 				$window->title('Plugin Manager');
 				$window->size(42, '');
-				$control->client->query('GetDetailedPlayerInfo', $pluginmanager['Player']['login']);
-				$ePlayer = $control->client->getResponse();
+				$this->instance()->client->query('GetDetailedPlayerInfo', $pluginmanager['Player']['login']);
+				$ePlayer = $this->instance()->client->getResponse();
 				$window->content($ePlayer['NickName'].'$z$fff is already editing the plugin list.');
 				$window->content('Please wait until '.$ePlayer['NickName'].'$z$fff finished editing.');
 				$window->textAlign('center');
@@ -296,7 +296,7 @@ class manager_plugins extends FoxControlPlugin {
 		}
 		elseif($button[3] == 'YES')
 		{
-			$changes = $this->getChanges();
+			$changes = $this->getChanges('');
 			$activates = $changes['a'];
 			$deactivates = $changes['d'];
 			if($activates == 0 && $deactivates == 0)

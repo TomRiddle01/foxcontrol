@@ -2,21 +2,21 @@
 <FoxControl_config>
 	<!-- Essential settings to run Fox Control -->
 
-	 <!-- Your TM-Login to be the Superadmin when starting Fox Control the first time -->
+	<YourTmLogin>YourLogin</YourTmLogin>			<!-- Your TM-Login to be the Superadmin when starting Fox Control the first time -->
 
 	<serverlogin>SERVERLOGIN</serverlogin> 			<!-- Login of your Dedicated Server Account from https://player.maniaplanet.com -->
 	<serverpw>SERVERPW</serverpw>					<!-- Password of your Dedicated Server Account -->
 	<community_code>000000</community_code>  		<!-- Set it to 000000 -->
 	<serverIP>127.0.0.1</serverIP>					<!-- IP of your Dedicated Server. If hosted on the same host as FoxControl, set it to 127.0.0.1 -->
-	<port>5004</port>                        		<!-- Port of your Dedicated Server -->
-	<SuperAdminPW>SuperAdmin123</SuperAdminPW>       <!-- SuperAdmin Password of your Dedicated Server -->
+	<port>5004</port>                        		<!-- XmlRcp Port of your Dedicated Server -->
+	<SuperAdminPW>SuperAdminPW</SuperAdminPW>       <!-- SuperAdmin Password of your Dedicated Server -->
 	<nation>German</nation>                  		<!-- Nation of your Servers location -->
 	<ServerLocation>Europe/Berlin</ServerLocation> 	<!-- Set your Server location. All available locations can be found here: http://php.net/manual/en/timezones.php -->
 
 	<!-- Database Settings for Fox Control -->
 	<db_path>localhost</db_path>					<!-- Database Server - usually 'localhost' (without the apostrophes) -->
 	<db_user>foxcontrol</db_user>					<!-- Database Username -->
-	<db_passwd>PASSWORD</db_passwd>				<!-- Database Password -->
+	<db_passwd>DBPASSWORD</db_passwd>				<!-- Database Password -->
 	<db_name>foxcontrol</db_name>					<!-- Database Name -->
 
 	<!-- Name Settings -->

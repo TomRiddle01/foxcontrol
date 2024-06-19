@@ -74,7 +74,7 @@ class plugin_dedimania extends FoxControlPlugin {
 
 		$this->_dm['Game'] = 'TM2';   // only TM2 is supported for Dedimania²
 		$this->_dm['Tool'] = 'FoxControl';
-		$this->_dm['ToolVersion'] = '0.5 DEV';
+		$this->_dm['ToolVersion'] = '1.0 Stable';
 		
 		//Get Posn
 		$posn_dedi = $this->getPosn('dedi_widget');

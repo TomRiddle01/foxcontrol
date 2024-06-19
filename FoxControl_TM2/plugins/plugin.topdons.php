@@ -52,7 +52,7 @@ class plugin_topdons extends FoxControlPlugin {
 		//Window Head
 		$window->content('<td width="3">$iID</td><td width="18">$iNickName</td><td width="15">$iLogin</td><td width="15">$iPlanets</td>');
 		
-		$sql = mysqli_query($this->db, "SELECT * FROM `players` ORDER BY donations ASC LIMIT 0,25");
+		$sql = mysqli_query($this->db, "SELECT * FROM `players` ORDER BY donations DESC LIMIT 0,25");
 		
 		$id = 0;
 		while($row = $sql->fetch_object()) {

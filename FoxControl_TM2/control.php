@@ -3,7 +3,7 @@
 // Copyright 2010 - 2012 by FoxRace, http://www.fox-control.de
 
 //* control.php - Main file
-//* Version:   0.7
+//* Version:   1.0
 //* Coded by:  matrix142, cyrilw, libero
 //* Copyright: FoxRace, http://www.fox-control.de
 
@@ -11,8 +11,8 @@ require_once('include/GbxRemote.inc.php');
 
 //DONT CHANGE THIS!
 define('nz', "\r\n");
-define('FOXC_VERSION', '0.7');
-define('FOXC_VERSIONP', 'TrackMania2 Beta Version');
+define('FOXC_VERSION', '1.0');
+define('FOXC_VERSIONP', 'TrackMania2 Stable');
 define('FOXC_BUILD', '2012-07-29');
 
 error_reporting(E_ALL);
@@ -206,6 +206,8 @@ class control {
 				PRIMARY KEY (`id`)
 				) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=120 ;";
 			mysqli_query($db, $tbl_players);
+			mysqli_query($db, "ALTER TABLE `players` ADD country VARCHAR(50) NOT NULL");
+			mysqli_query($db, "ALTER TABLE `players` ADD connections INT(20) NOT NULL");
 			
 			$tbl_records = "
 				CREATE TABLE IF NOT EXISTS `records` (
@@ -626,7 +628,7 @@ class control {
 		$player_rank = $this->getPlayerRankName($connectedplayer['Login']);
 		
 		//Check if Player is FoxTeam Member
-		if($connectedplayer['Login']=='cyrilw' OR $connectedplayer['Login']=='libero' OR $connectedplayer['Login']=='jensoo7' OR $connectedplayer['Login']=='matrix142'){
+		if($connectedplayer['Login']=='jensoo7' OR $connectedplayer['Login']=='matrix142'){
 			$player_rank .= ' '.$settings['Color_Default'].'and '.$color_join.'F$fffox'.$color_join.' T$fffeam '.$color_join.'M$fffember$o';
 		}
 		
@@ -642,18 +644,27 @@ class control {
 			//Send Join message
 			$this->client->query('ChatSendServerMessage', $join_message);
 		}
-			
+		
 		//Send Welcome message to player
 		$this->client->query('ChatSendServerMessageToLogin', '$06f» $fffWelcome '.$connectedplayer['NickName'].'$z$s$fff on '.$servername.$newline.'$z$s$06f» $fffThis Server is running with $06fF$fffox$06fC$fffontrol$fff ('.$foxcontrol->versionpraefix.': '.$foxcontrol->version.' )'.$newline.'$06f» $fffHave fun!', $connected_player[0]);  
 		console('New '.str_replace('$o', '', $player_rank).' ' . $connected_player[0]  . ' connected! IP: '.$connectedplayer['IPAddress'].'');
-			
+		
+		//Get Country
+		$country = explode('|', $connectedplayer['Path']);
+		$country = $country[1];
+		
 		$sql = mysqli_query($db, "SELECT * FROM `players` WHERE playerlogin = '".$connectedplayer['Login']."'");
 		//Insert Player into the database or update it's data
-		if(!$sql->fetch_object()){
-			$sql = mysqli_query($db, "INSERT INTO `players` (id, playerlogin, nickname, lastconnect) VALUES ('', '".mysqli_real_escape_string($db, $connectedplayer['Login'])."', '".mysqli_real_escape_string($db, $connectedplayer['NickName'])."', '".time()."')");
+		if(!$row = $sql->fetch_object()){
+			$sql = mysqli_query($db, "INSERT INTO `players` (id, playerlogin, nickname, lastconnect, country, connections) VALUES ('', '".mysqli_real_escape_string($db, $connectedplayer['Login'])."', '".mysqli_real_escape_string($db, $connectedplayer['NickName'])."', '".time()."', '".$country."', '1')");
 		}
 		else{
-			$sql = mysqli_query($db, "UPDATE `players` SET nickname = '".mysqli_real_escape_string($db, $connectedplayer['NickName'])."', lastconnect = '".time()."' WHERE playerlogin = '".mysqli_real_escape_string($db, $connectedplayer['Login'])."'");
+			//Get Connections			
+			$connections = $row->connections;
+			$connections += 1;
+		
+			//Update Data
+			$sql = mysqli_query($db, "UPDATE `players` SET nickname = '".mysqli_real_escape_string($db, $connectedplayer['NickName'])."', lastconnect = '".time()."', country = '".mysqli_real_escape_string($db, $country)."', connections = '".$connections."' WHERE playerlogin = '".mysqli_real_escape_string($db, $connectedplayer['Login'])."'");
 		}
 			
 		//Create welcome window
@@ -708,7 +719,7 @@ class control {
 		$player_rank = $this->getPlayerRankName($disconnectedplayer);
 
 		//If disconnected player is FoxTeam Member
-		if($disconnectedplayer == 'cyrilw' OR $disconnectedplayer == 'libero6' OR $disconnectedplayer == 'jensoo7' OR $disconnectedplayer == 'matrix142'){
+		if($disconnectedplayer == 'jensoo7' OR $disconnectedplayer == 'matrix142'){
 			$player_rank .= ' '.$settings['Color_Default'].'and '.$color_left.'F$fffox'.$color_left.' T$fffeam '.$color_left.'M$fffember$o';
 		}
 		
@@ -758,7 +769,7 @@ class control {
 			$gameMode = $scriptInfo['Name'];
 		
 			if($gameMode == '<in-development>') {
-				include_once('gbxdatafetcher/gbxdatafetcher.inc.php');
+				include_once('include/gbxdatafetcher.inc.php');
 	
 				$this->client->query('GetMapsDirectory');
 				$mapDir = $this->client->getResponse();
@@ -809,6 +820,14 @@ class control {
 	
 		return $formatedtime_houres.'h';
 
+	}
+	
+	//FORMAT TIME MINUTE
+	public function formattime_minute($time_to_format) {
+		//FORMAT TIME
+		$formatedtime_minutes = floor($time_to_format/60);
+	
+		return $formatedtime_minutes.'min';	
 	}
 	
 	//CHECK IF PLAYER IS ADMIN
@@ -1289,7 +1308,7 @@ class control {
 			
 				$path = $detInfo['Path'];
 		
-				$file = fopen('http://scripts.fox-control.de/stats/sendData.php?serverlogin='.$settings['ServerLogin'].'&serverpath='.$path.'', 'rb');
+				$file = fopen('http://scripts.fox-control.de/stats/sendData.php?serverlogin='.$settings['ServerLogin'].'&serverpath='.$path.'?game=TMCanyon', 'rb');
 				$file = fclose($file);
 			}
 		}

@@ -16,7 +16,7 @@
 	<settings>
 		<!-- GENERAL -->
 		<general>
-			<dedi_code>48a8fb51a6</dedi_code> <!-- DEDIMANIA CODE FROM http://dedimania.net/tm2stats/?do=register FOR THE SERVERLOGIN -->
+			<dedi_code>DEDICODE</dedi_code> <!-- DEDIMANIA CODE FROM http://dedimania.net/tm2stats/?do=register FOR THE SERVERLOGIN -->
 			<dedi_url>http://dedimania.net:8082/Dedimania</dedi_url> <!-- URL TO THE DEDIMANIA WEBSERVER. DEFAULT http://dedimania.net:8082/Dedimania -->
 		</general>
 		<!-- MESSAGE -->

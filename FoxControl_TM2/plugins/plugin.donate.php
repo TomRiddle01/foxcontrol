@@ -32,8 +32,8 @@ class plugin_donate extends FoxControlPlugin {
 		$this->displayDonatePanel();
 	}
 	
-	public function onEndChallenge($args){
-		$this->displayDonatePanel(false, array(0 => '42.5', 1 => '0'));
+	public function onEndchallenge($args){
+		$this->displayDonatePanel(false, array(0 => '42.25', 1 => '-80'));
 	}
 	
 	public function displayDonatePanel ($login = false, $posn = array(0 => '0', 1 => '0')) {

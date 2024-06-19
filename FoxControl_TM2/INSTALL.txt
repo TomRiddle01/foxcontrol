@@ -32,3 +32,6 @@ If you want to use the Dedimania plugin, do the following steps
 ********************
 1. Set CHMOD 777 to your FoxControl Folder
 2. Set CHMOD 777 to /var/run/FoxControl.pid
+
+Start FoxControl with
+./control.sh start

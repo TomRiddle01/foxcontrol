@@ -1,6 +1,6 @@
 <?php
 //* plugin.players.php - Playerlist
-//* Version:   0.6
+//* Version:   1.0
 //* Coded by:  matrix142
 //* Copyright: FoxRace, http://www.fox-control.de
 
@@ -11,7 +11,7 @@ class plugin_players extends FoxControlPlugin {
 	public function onStartUp() {
 		$this->name = 'Playerlist';
 		$this->author = 'matrix142';
-		$this->version = '0.6';
+		$this->version = '1.0';
 		
 		$this->registerCommand('players', 'Shows the Player list.', false);
 		$this->registerCommand('admins', 'Shows a list of the admins. $s/admins <all|ops|admins|superadmins>$s', false);
@@ -41,7 +41,7 @@ class plugin_players extends FoxControlPlugin {
 		global $playerList;
 	
 		//ADMIN ACTIONS
-		if($args[2] >= $this->mlids[0] && $args[2] <= $this->mlids[75]) {			
+		if($args[2] >= $this->mlids[0] && $args[2] <= $this->mlids[124]) {			
 			//WARN
 			if($args[2] >= $this->mlids[0] && $args[2] <= $this->mlids[24]) {
 				$min = 0;
@@ -62,8 +62,8 @@ class plugin_players extends FoxControlPlugin {
 				$min = 75;
 				$action = 'blacklist';
 			}
-			//FORCE SPECTATOR
-			/*else if($args[2] >= $this->mlids[100] && $args[2] <= $this->mlids[124]) {
+			//SPECTATOR
+			else if($args[2] >= $this->mlids[100] && $args[2] <= $this->mlids[124]) {
 				$min = 100;
 				
 				$pageID = $this->playerListUsers[$args[1]];
@@ -73,9 +73,9 @@ class plugin_players extends FoxControlPlugin {
 				if($playerList[$playerID]['IsSpectator'] == 1) {
 					$action = 'forceplayer';
 				} else {
-					$action = 'forcespectator';
+					$action = 'forcespec';
 				}
-			}*/
+			}
 			
 			$pageID = $this->playerListUsers[$args[1]];
 			$pageID = $pageID * 25;
@@ -103,7 +103,7 @@ class plugin_players extends FoxControlPlugin {
 	}
 	
 	public function displayList($login, $type = 'players') {
-		global $playerList, $type_list;
+		global $playerList, $type_list, $settings;
 	
 		$type_list = $type;
 	
@@ -171,18 +171,18 @@ class plugin_players extends FoxControlPlugin {
 					$kickID = $this->mlids[25] + $i;
 					$banID = $this->mlids[50] + $i;
 					$blackID = $this->mlids[75] + $i;
-					//$specID = $this->mlids[100] + $i;
+					$specID = $this->mlids[100] + $i;
 					
-					/*if($playerList[$currentID]['IsSpectator'] == 1) {
-						$spec = 'UnSpectator';
+					if($playerList[$currentID]['IsSpectator'] == 1) {
+						$spec = 'ForcePlayer';
 					} else {
-						$spec = 'Spectator';
-					}*/
+						$spec = 'ForceSpectator';
+					}
 					
-					$window->content('<td width="3">'.($currentID + 1).'</td><td width="20">'.$playerList[$currentID]['NickName'].'</td><td width="12">'.$playerList[$currentID]['Login'].'</td><td width="6" id="'.$warnID.'" align="center">Warn</td><td width="6" id="'.$kickID.'" align="center">Kick</td><td width="6" id="'.$banID.'" align="center">Ban</td><td width="6.5" id="'.$blackID.'" align="center">Blacklist</td>');
+					$window->content('<td width="3">'.($currentID + 1).'</td><td width="20">'.$playerList[$currentID]['NickName'].'</td><td width="12">'.$playerList[$currentID]['Login'].'</td><td width="6" id="'.$warnID.'" align="center">Warn</td><td width="6" id="'.$kickID.'" align="center">Kick</td><td width="6" id="'.$banID.'" align="center">Ban</td><td width="6.5" id="'.$blackID.'" align="center">Blacklist</td><td width="6.5" id="'.$specID.'">'.$spec.'</td>');
 				}
 				//FOR PLAYERS
-				else {				
+				else {
 					$window->content('<td width="3">'.($currentID + 1).'</td><td width="25">'.$playerList[$currentID]['NickName'].'</td><td width="20">'.$playerList[$currentID]['Login'].'</td><td width="15">'.$playerList[$currentID]['LadderRanking'].'</td>');
 				}
 				
@@ -216,6 +216,8 @@ class plugin_players extends FoxControlPlugin {
 				if($row2 = $sql2->fetch_object()) {
 					$nickname = $row2->nickname;
 				}
+				
+				if(!isset($nickname)) $nickname = $row->playerlogin;
 				
 				$rights = $this->getRights($row->playerlogin);
 				

@@ -57,7 +57,7 @@ class plugin_records extends FoxControlPlugin {
 			$widget->posn(($posn_local[0]+1.8), $posn_local[1]);
 			$widget->size(16, 30);
 			$widget->fontSize('1');
-			$widget->icon('Icons64x64_1', 'OfficialRace');
+			$widget->icon('Icons128x128_1', 'Multiplayer');
 			
 			$widget->addCode('	<quad posn="0 -3 0" halign="center" sizen="16 7" style="{style2}" substyle="{substyle2}" />
 								<quad posn="6.8 -27.2 0" halign="center" sizen="3 3" image="http://www.fox-control.de/fcimages/shutright.png" action="'.$this->mlids[0].'" />');
@@ -78,7 +78,7 @@ class plugin_records extends FoxControlPlugin {
 			$widget->size(16, 35);
 			
 			$widget->fontSize('1');
-			$widget->icon('Icons64x64_1', 'RestartRace');
+			$widget->icon('Icons128x128_1', 'Buddies');
 		
 			$widget->addCode('	<quad posn="0 -3 0" halign="center" sizen="16 7" style="{style2}" substyle="{substyle2}" />
 								<quad posn="-6.8 -32.2 0" halign="center" sizen="3 3" image="http://www.fox-control.de/fcimages/shutleft.png" action="'.$this->mlids[1].'" />');
@@ -167,27 +167,42 @@ class plugin_records extends FoxControlPlugin {
 		$player_info = $this->instance()->client->getResponse();
 		
 		$color_newlocal = $this->config->settings->color->color_newlocal;
-		
 		$gameMode = $this->instance()->getGameMode();
 		
 		$newRec = false;
+		$newLive = false;
 		
 		if($PlayerFinish[2] > 0) {		
+			/*
+				LIVE RANKINGS
+			*/
+			$isInLiveArray = false;
+			foreach($this->liveRankings as $key => $value) {
+				if($value['Login'] == $PlayerFinish[1]) {
+					$isInLiveArray = true;
+					$liveArrayKey = $key;
+					break;
+				}
+			}
+			
 			//Write Live Rankings
-			if(isset($this->liveRankings[$PlayerFinish[1]])) {
-				if($PlayerFinish[2] < $this->liveRankings[$PlayerFinish[1]]['time']) {
-					$this->liveRankings[$PlayerFinish[1]]['time'] = $PlayerFinish[2];
-					
+			if($isInLiveArray == true) {
+				if($PlayerFinish[0] < $this->liveRankings[$liveArrayKey]['time']) {
+					$this->liveRankings[$liveArrayKey]['time'] = $PlayerFinish[0];
 					uasort($this->liveRankings, 'compareTimeArrays');
+					
+					$newLive = true;
 				}
 			} else {
-				$this->liveRankings[$PlayerFinish[1]] = array();
-				$this->liveRankings[$PlayerFinish[1]]['time'] = $PlayerFinish[2];
-				
+				$this->liveRankings[] = array('Login' => $PlayerFinish[1], 'time' => $PlayerFinish[0], 'NickName' => $player_info['NickName']);
 				uasort($this->liveRankings, 'compareTimeArrays');
+				
+				$newLive = true;
 			}
 		
-			//Write Local Records
+			/*
+				LOCAL RECORDS
+			*/
 			if($posn_local != false) {	
 				$isInArray = false;
 			
@@ -264,7 +279,7 @@ class plugin_records extends FoxControlPlugin {
 				$this->refreshLocalWidgets();
 				$this->refreshLiveWidgets();
 			}
-			else if($newRec == false && $this->liveRankings[$PlayerFinish[1]]['time'] == $PlayerFinish[2] && $PlayerFinish[2] != 0) {
+			else if($newRec == false && $newLive == true) {
 				$this->refreshLiveWidgets();
 			}
 		}
@@ -391,10 +406,10 @@ class plugin_records extends FoxControlPlugin {
 	public function displayLiveWidget() {
 		global $widget_code_live, $posn_live;
 		
-		$this->instance()->client->query('GetCurrentRanking', 15, 0);
-		$current_ranking = $this->instance()->client->getResponse();
-		
 		$gameMode = $this->gameMode;
+		
+		$this->instance()->client->query('GetCurrentRanking', 200, 0);
+		$current_ranking = $this->instance()->client->getResponse();
 		
 		$this->instance()->client->query('GetPlayerList', 200, 0);
 		$playerList = $this->instance()->client->getResponse();
@@ -402,8 +417,8 @@ class plugin_records extends FoxControlPlugin {
 		$widget = $this->widget;
 		
 		foreach($playerList as $key => $value) {
-			foreach($current_ranking as $key2 => $value2) {
-				if($current_ranking[$key2]['Login'] == $playerList[$key]['Login']) {
+			foreach($this->liveRankings as $key2 => $value2) {
+				if($this->liveRankings[$key2]['Login'] == $playerList[$key]['Login']) {
 					$playerRank = $key2;
 					break;
 				}
@@ -427,44 +442,40 @@ class plugin_records extends FoxControlPlugin {
 			$playerBar = 0;
 			$playerBar2 = 0;
 		
-			for($run=0; $run<15 && isset($current_ranking[$run]); $run++) {
+			for($run=0; $run<15 && isset($this->liveRankings[$run]); $run++) {
 				$rank = $run+1;
 
 				if($rank<4){					
-					if($current_ranking[$run]['BestTime'] != -1 && $current_ranking[$run]['BestTime'] != 0) {
-						//Modify time and nickname
-						$time = $this->instance()->format_time($current_ranking[$run]['BestTime']);
-						if(preg_match('/$s/', $current_ranking[$run]['NickName'])) $nickname = $current_ranking[$run]['NickName'];
-						else $nickname = '$s'.$current_ranking[$run]['NickName'];
+					//Modify time and nickname
+					$time = $this->instance()->format_time($this->liveRankings[$run]['time']);
+					if(preg_match('/$s/', $this->liveRankings[$run]['NickName'])) $nickname = $this->liveRankings[$run]['NickName'];
+					else $nickname = '$s'.$this->liveRankings[$run]['NickName'];
 						
-						if($gameMode['name'] == 'rounds') {
-							$widget->addContent('<td width="0.5"></td><td width="2">$o$09f'.$current_ranking[$run]['Score'].' P</td><td width="4.5">'.$time.'</td><td width="9">'.htmlspecialchars(stripslashes($nickname)).'</td>', $playerList[$key]['Login'], $this->widgetIDs[1]);
-						} else {
-							$widget->addContent('<td width="0.5"></td><td width="2">$o$09f'.$rank.'</td><td width="4.5">'.$time.'</td><td width="9">'.htmlspecialchars(stripslashes($nickname)).'</td>', $playerList[$key]['Login'], $this->widgetIDs[1]);
-						}
+					if($gameMode['name'] == 'rounds') {
+						$widget->addContent('<td width="0.5"></td><td width="2">$o$09f'.$current_ranking[$run]['Score'].' P</td><td width="4.5">'.$time.'</td><td width="9">'.htmlspecialchars(stripslashes($nickname)).'</td>', $playerList[$key]['Login'], $this->widgetIDs[1]);
+					} else {
+						$widget->addContent('<td width="0.5"></td><td width="2">$o$09f'.$rank.'</td><td width="4.5">'.$time.'</td><td width="9">'.htmlspecialchars(stripslashes($nickname)).'</td>', $playerList[$key]['Login'], $this->widgetIDs[1]);
+					}
 				
-						if($current_ranking[$run]['Login'] == $playerList[$key]['Login']) {
-							$playerBar = $run + 1;
-						}
+					if($this->liveRankings[$run]['Login'] == $playerList[$key]['Login']) {
+						$playerBar = $run + 1;
 					}
 				}else{
 					$rank = ($playerRank - 4) + ($run - 2);
 					
 					//Modify time and nickname
-					$time = $this->instance()->format_time($current_ranking[$rank - 1]['BestTime']);
-					if(preg_match('/$s/', $current_ranking[$rank - 1]['NickName'])) $nickname = $current_ranking[$rank - 1]['NickName'];
-					else $nickname = '$s'.$current_ranking[$rank - 1]['NickName'];
+					$time = $this->instance()->format_time($this->liveRankings[$rank - 1]['time']);
+					if(preg_match('/$s/', $this->liveRankings[$rank - 1]['NickName'])) $nickname = $this->liveRankings[$rank - 1]['NickName'];
+					else $nickname = '$s'.$this->liveRankings[$rank - 1]['NickName'];
 					
-					if($current_ranking[$rank - 1]['BestTime'] != -1 && $current_ranking[$rank - 1]['BestTime'] != 0) {
-						if($gameMode['name'] == 'rounds') {
-							$widget->addContent('<td width="0.5"></td><td width="2">$o$09f'.$current_ranking[$rank - 1]['Score'].' P</td><td width="4.5">'.$time.'</td><td width="9">'.htmlspecialchars(stripslashes($nickname)).'</td>', $playerList[$key]['Login'], $this->widgetIDs[1]);
-						} else {
-							$widget->addContent('<td width="0.5"></td><td width="2">$o$09f'.$rank.'</td><td width="4.5">'.$time.'</td><td width="9">'.htmlspecialchars(stripslashes($nickname)).'</td>', $playerList[$key]['Login'], $this->widgetIDs[1]);
-						}
+					if($gameMode['name'] == 'rounds') {
+						$widget->addContent('<td width="0.5"></td><td width="2">$o$09f'.$current_ranking[$rank - 1]['Score'].' P</td><td width="4.5">'.$time.'</td><td width="9">'.htmlspecialchars(stripslashes($nickname)).'</td>', $playerList[$key]['Login'], $this->widgetIDs[1]);
+					} else {
+						$widget->addContent('<td width="0.5"></td><td width="2">$o$09f'.$rank.'</td><td width="4.5">'.$time.'</td><td width="9">'.htmlspecialchars(stripslashes($nickname)).'</td>', $playerList[$key]['Login'], $this->widgetIDs[1]);
+					}
 				
-						if($current_ranking[$rank - 1]['Login'] == $playerList[$key]['Login']) {
-							$playerBar2 = $run + 1;
-						}
+					if($this->liveRankings[$rank - 1]['Login'] == $playerList[$key]['Login']) {
+						$playerBar2 = $run + 1;
 					}
 				}
 			}
@@ -511,14 +522,11 @@ class plugin_records extends FoxControlPlugin {
 		$this->onManialinkPageAnswer(array(1 => $args[1], 2 => $this->mlids[0]));
 	}
 	
-	public function onPagesLive($args) {
-		$this->instance()->client->query('GetCurrentRanking', 200, 0);
-		$ranking = $this->instance()->client->getResponse();
-	
+	public function onPagesLive($args) {	
 		if($args[2] == 1) $this->liveListLogin[$args[1]] = 0; // <<
 		elseif($args[2] == 2 && $this->liveListLogin[$args[1]] > 0) $this->liveListLogin[$args[1]]--; // <
 		elseif($args[2] == 6) $this->liveListLogin[$args[1]]++; // >
-		elseif($args[2] == 7) $this->liveListLogin[$args[1]] = floor(count($ranking) / 25);
+		elseif($args[2] == 7) $this->liveListLogin[$args[1]] = floor(count($this->liveRankings) / 25);
 		
 		$arr = array(1 => $args[1], 2 => $this->mlids[1]);
 		$this->onManialinkPageAnswer(array(1 => $args[1], 2 => $this->mlids[1]));
@@ -624,18 +632,15 @@ class plugin_records extends FoxControlPlugin {
 			$window->show($args[1]);
 			
 		//DISPLAY LIVE RANKINGS
-		} else if($args[2] == $this->mlids[1]) {
-			$this->instance()->client->query('GetCurrentRanking', 200, 0);
-			$ranking = $this->instance()->client->getResponse();
-		
+		} else if($args[2] == $this->mlids[1]) {		
 			if(!isset($this->liveListLogin[$args[1]])) $this->liveListLogin[$args[1]] = 0;
 			
 			$liveListID = $this->liveListLogin[$args[1]] * 25;
 			
-			if(isset($ranking[$liveListID - 24])) $prev_page = true;
+			if(isset($this->liveRankings[$liveListID - 24])) $prev_page = true;
 			else $prev_page = false;
 			
-			if(isset($ranking[$liveListID + 24])) $next_page = true;
+			if(isset($this->liveRankings[$liveListID + 24])) $next_page = true;
 			else $next_page = false;
 			
 			$window = $this->window;
@@ -669,10 +674,12 @@ class plugin_records extends FoxControlPlugin {
 			$window->content('<td width="4">$iRank</td><td width="2"></td><td width="10">$iTime</td><td width="3"></td><td width="22">$iNickname</td><td width="3"></td><td width="14">$iLogin</td><td width="3"></td>');
 			
 			//Display Live Rankings
-			for($i = 0; $i < count($ranking); $i++) {
-				if($ranking[$i]['BestTime'] >= 0) {
-					$time = $this->instance()->format_time($ranking[$i]['BestTime']);
-					$window->content('<td width="4">$o$09f'.($i+1).'</td><td width="2"></td><td width="10">'.$time.'</td><td width="3"></td><td width="22">'.htmlspecialchars($ranking[$i]['NickName']).'</td><td width="3"></td><td width="14">'.$ranking[$i]['Login'].'</td>');
+			for($i = 0; isset($this->liveRankings[$liveListID]) && $i <= 24; $i++) {
+				if($this->liveRankings[$liveListID]['time'] >= 0) {
+					$time = $this->instance()->format_time($this->liveRankings[$liveListID]['time']);
+					$window->content('<td width="4">$o$09f'.($liveListID+1).'</td><td width="2"></td><td width="10">'.$time.'</td><td width="3"></td><td width="22">'.htmlspecialchars($this->liveRankings[$liveListID]['NickName']).'</td><td width="3"></td><td width="14">'.$this->liveRankings[$liveListID]['Login'].'</td>');
+				
+					$liveListID++;
 				}
 			}
 			

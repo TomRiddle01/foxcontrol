@@ -1,7 +1,7 @@
 <?php
 //* plugin.adminpanel.php - Adminpanel
-//* Version:   0.4
-//* Coded by:  cyrilw, libero6
+//* Version:   0.1
+//* Coded by:  matrix142
 //* Copyright: FoxRace, http://www.fox-control.de
 
 class plugin_adminpanel extends FoxControlPlugin {
@@ -9,9 +9,9 @@ class plugin_adminpanel extends FoxControlPlugin {
 		$this->registerMLIds(8);
 		$this->displayAdminpanelToAll();
 		
-		$this->name = 'Admin Panel';
-		$this->author = 'Cyril & Libero';
-		$this->version = '0.4';
+		$this->name = 'Adminpanel';
+		$this->author = 'matrix142';
+		$this->version = '0.1';
 	}
 	
 	public function onPlayerConnect($args) {
@@ -39,19 +39,20 @@ class plugin_adminpanel extends FoxControlPlugin {
 		if($this->enabled == false) return;
 		if($this->instance()->is_admin($login) == false) return;
 		$ap_mlcode = '
-		<quad posn="57.65 -20 0" sizen="18.5 3" halign="center" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'"/>
-		<quad posn="62.7 -20 2" sizen="3 3" halign="center" style="Icons64x64_1" action="'.$this->mlids[0].'" substyle="ArrowNext" />
-		<quad posn="60.7 -20 1" sizen="3 3" halign="center" style="Icons64x64_1" action="'.$this->mlids[1].'" substyle="ClipPause" />
-		<quad posn="58.7 -20 1" sizen="3 3" halign="center" style="Icons64x64_1" action="'.$this->mlids[2].'" substyle="ArrowPrev" />
-		<quad posn="56.7 -20 1" sizen="3 3" halign="center" style="Icons64x64_1" action="'.$this->mlids[3].'" substyle="ArrowFastPrev" />
-		<quad posn="54.7 -20.3 2" sizen="2.4 2.4" halign="center" style="Icons64x64_1" action="'.$this->mlids[4].'" substyle="ArrowRed" />
-		
-		<quad posn="52.3 -20 2" sizen="3.3 3.3" halign="center" style="Icons128x128_1" action="'.$this->mlids[6].'" substyle="Challenge" />
-		
-		<quad posn="50 -20.3 1" sizen="2.5 2.5" halign="center" style="Icons64x64_1" action="'.$this->mlids[5].'" substyle="Buddy" />';
+			<quad posn="57.65 -20 0" sizen="18.5 3" halign="center" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'"/>
+			<quad posn="62.7 -20 2" sizen="3 3" halign="center" style="Icons64x64_1" action="'.$this->mlids[0].'" substyle="ArrowNext" />
+			<quad posn="60.7 -20 1" sizen="3 3" halign="center" style="Icons64x64_1" action="'.$this->mlids[1].'" substyle="ClipPause" />
+			<quad posn="58.7 -20 1" sizen="3 3" halign="center" style="Icons64x64_1" action="'.$this->mlids[2].'" substyle="ArrowPrev" />
+			<quad posn="56.7 -20 1" sizen="3 3" halign="center" style="Icons64x64_1" action="'.$this->mlids[3].'" substyle="ArrowFastPrev" />
+			<quad posn="54.5 -20 2" sizen="3 3" halign="center" style="Icons64x64_1" action="'.$this->mlids[6].'" substyle="Sub" />
+			<quad posn="52.1 -20 2" sizen="3 3" halign="center" style="Icons64x64_1" action="'.$this->mlids[4].'" substyle="SliderCursor" />
+			<quad posn="50 -20.3 1" sizen="2.5 2.5" halign="center" style="Icons64x64_1" action="'.$this->mlids[5].'" substyle="Buddy" />';
 		
 		if($is_end_challenge == true){
-			$ap_mlcode = str_replace('-20', '-24', str_replace('-20.5', '-24.5', $ap_mlcode));
+			$ap_mlcode = '
+				<frame posn="0 -4 0">
+					'.$ap_mlcode.'
+				</frame>';
 		}
 		$this->displayManialinkToLogin($login, $ap_mlcode, $this->mlids[0]);
 	}
@@ -83,7 +84,7 @@ class plugin_adminpanel extends FoxControlPlugin {
 		if($args[2] == $this->mlids[0]){
 			if($skip_challenge==true){
 				$this->instance()->challenge_skip();
-				$this->chat($rights[1].' $fff'.$Admin['NickName'].'$z$s $f90skipped the challenge!', 'f90');
+				$this->chat($rights[1].' $fff'.$Admin['NickName'].'$z$s $f90skipped the map!', 'f90');
 			}
 			else $this->chatToLogin($Admin['Login'], $settings['Text_wrong_rights']);
 		}
@@ -103,7 +104,7 @@ class plugin_adminpanel extends FoxControlPlugin {
 				global $chall_restarted_admin;
 				$chall_restarted_admin = true;
 				$this->instance()->client->query('RestartChallenge');
-				$this->chat($rights[1].' $fff'.$Admin['NickName'].'$z$s $f90restarted the challenge!', 'f90');
+				$this->chat($rights[1].' $fff'.$Admin['NickName'].'$z$s $f90restarted the map!', 'f90');
 			}
 			else $this->chatToLogin($Admin['Login'], $settings['Text_wrong_rights']);
 		}

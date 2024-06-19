@@ -11,6 +11,7 @@ class chat_admin extends FoxControlPlugin {
 	public $trackdir = 'Downloaded';
 	public $commandsPerPage = 17;
 	public $helpUsers = array();
+	public $scriptSettings;
 	
 	public function onStartUp() {
 		$this->registerCommand('adminhelp', 'Shows the helpwindow for the admin commands.', false);
@@ -24,6 +25,8 @@ class chat_admin extends FoxControlPlugin {
 		$this->registerCommand('blacklist', 'Blacklists the specified player. /blacklist <login>', true);
 		$this->registerCommand('unblacklist', 'Removes the specified player from the blacklist. /unblacklist <login>', true);
 		$this->registerCommand('unban', 'Unans the specified player. /unban <login>', true);
+		$this->registerCommand('ignore', 'Ignores a players chat message. /ignore <login>', true);
+		$this->registerCommand('unignore', 'Unignores a player', '/unignore <login>', true);
 		$this->registerCommand('reboot', 'Reboots FoxControl.', true);
 		$this->registerCommand('skip', 'Skips the current challenge.', true);
 		$this->registerCommand('restart', 'Restarts the current challenge.', true);
@@ -35,12 +38,15 @@ class chat_admin extends FoxControlPlugin {
 		$this->registerCommand('mode', 'Sets the game mode to the specified mode. Type in $s/adminhelp mode$s for more details.', true);
 		$this->registerCommand('forcespec', 'Forces a player into Spectator mode.  /forcespec <login>', true);
 		$this->registerCommand('forceplayer', 'Forces a player into Player mode. /forceplayer <login>', true);
+		$this->registerCommand('scriptsettings', 'Set Scriptsettings. $i/scriptsettings$i displays a list of available settings', true);
 		
 		$this->registerMLIds(1);
 		
 		$this->name = 'Admin chat';
 		$this->author = 'matrix142 & cyrilw';
 		$this->version = '0.6';
+		
+		$this->getScriptSettings();
 	}
 	public function onCommand($args) {
 		global $settings;
@@ -372,7 +378,7 @@ class chat_admin extends FoxControlPlugin {
 				} else if($args[3][0] == 'map') {
 					if($admin_add_track == true) {
 						if(!empty($args[3][1]) AND is_numeric($args[3][1])){
-							include_once('gbxdatafetcher/gbxdatafetcher.inc.php');
+							include_once('include/gbxdatafetcher.inc.php');
 						
 							$mxid = $args[3][1];
 							//Get Data of the Track from ManiaExchange
@@ -398,27 +404,10 @@ class chat_admin extends FoxControlPlugin {
 								//Write Trackfile to the server
 								$dir = $trackdir.$this->trackdir.'/'.$filename;
 								file_put_contents($dir, $trackfile);
-							
-								//Get Current Script
-								$scriptName = $this->instance()->getGameMode();
 								
-								//Get Maps required Script								
-								$gbx = new GBXChallengeFetcher($dir, true);
-								$mapGameMode = $gbx->parsedxml['DESC']['MAPTYPE'];
-								
-								//Clean GameMode Name
-								$mapGameMode = str_replace('TrackMania\\', '', $mapGameMode);
-								$mapGameMode = str_replace('Trackmania\\', '', $mapGameMode);
-								$mapGameMode = str_replace('Multi', '', $mapGameMode);
-								
-								if($scriptName != $mapGameMode) {
-									$this->instance()->client->query('InsertChallenge', $dir);
-									$this->chatToLogin($CommandAuthor['Login'], '$z$s$0f0 Map $fff'.$trackname.'$0f0 (ID: $fff'.$mxid.'$0f0) has been downloaded but the GameMode might be wrong. Check with the Command $i/maps$i', '0f0');
-								} else {							
-									//Insert Map
-									$this->instance()->client->query('InsertChallenge', $dir);
-									$this->chat($rights[1].' '.$CommandAuthor['NickName'].'$z$s$0f0 added $fff'.$trackname.'$0f0 (ID: $fff'.$mxid.'$0f0) from MX!', '0f0');
-								}
+								//Insert Map
+								$this->instance()->client->query('InsertChallenge', $dir);
+								$this->chat($rights[1].' '.$CommandAuthor['NickName'].'$z$s$0f0 added $fff'.$trackname.'$0f0 (ID: $fff'.$mxid.'$0f0) from MX!', '0f0');
 							} else $this->chatToLogin($CommandAuthor['Login'], 'The map with ID '.$mxid.' does not exsit or MX is down!', 'f60');
 						} else $this->chatToLogin($CommandAuthor['Login'], 'The ID must be numeric!', 'f60');
 					} else $this->sendError($CommandAuthor['Login']);
@@ -477,7 +466,45 @@ class chat_admin extends FoxControlPlugin {
 					} else $this->sendError($CommandAuthor['Login']);
 				}
 			}
+		
+		//SCRIPTSETTINGS
+		} else if($args[2] == 'scriptsettings') {
+			if($args[3][0] != '') {
+				if(isset($args[3][1])) {
+					$this->chat($rights[1].' '.$CommandAuthor['NickName'].'$z$s$f90 set Scriptsettings $fff'.$args[3][0].' $f90to $fff'.$args[3][1].'!', 'f90');
+				
+					if($args[3][1] == 'true') $args[3][1] = true;
+					else if($args[3][1] == 'false') $args[3][1] = false;
+					else if(intval($args[3][1]) == $args[3][1]) $args[3][1] = (int) $args[3][1];
+					
+					$this->scriptSettings[$args[3][0]] = $args[3][1];
+					$this->instance()->client->query('SetModeScriptSettings', $this->scriptSettings);
+					
+					$this->getScriptSettings();
+				}
+			} else {
+				$this->getScriptSettings();
 			
+				$window = $this->window;
+				$window->init();
+				$window->title('Scriptsettings - /scriptsettings <name> <value>');
+				$window->displayAsTable(true);
+					
+				$window->size(70, '');
+				$window->posY('40');
+				
+				$window->addButton('Close', 15, true);
+				$window->content('<td width="25">$iName</td><td width="50">$iValue</td>');
+				
+				foreach($this->scriptSettings as $key => $value) {
+					if($value === false) $value = 'false';
+					if($value === true) $value = 'true';
+					$window->content('<td width="25">'.$key.'</td><td width="50">'.$value.'</td>');
+				}
+					
+				$window->show($args[1]);
+			}
+		
 		//SAVE MATCHSETTINGS
 		} else if($args[2] == 'save') {
 			if(!empty($args[3][0])) {
@@ -597,6 +624,26 @@ class chat_admin extends FoxControlPlugin {
 				$this->chat($rights[1].' $fff'.$CommandAuthor['NickName'].'$z$s '.$settings['Color_ForceSpec'].'forced $fff'.$playerInfo['NickName'].'$z$g$s'.$settings['Color_ForceSpec'].' into Player mode!', $settings['Color_ForceSpec']);
 			} else $this->sendError($CommandAuthor['Login']);
 		
+		//IGNORE PLAYER
+		} else if($args[2] == 'ignore') {
+			if($ignorePlayer == true) {
+				$this->instance()->client->query('GetDetailedPlayerInfo', $args[3][0]);
+				$playerInfo = $this->instance()->client->getResponse();
+				
+				$this->instance()->client->query('Ignore', $args[3][0]);
+				$this->chat($rights[1].' $fff'.$CommandAuthor['NickName'].'$z$s '.$settings['Color_ForceSpec'].'ignored $fff'.$playerInfo['NickName'].'$z$g$s'.$settings['Color_ForceSpec'].'!', $settings['Color_ForceSpec']);
+			}
+			
+		//UNIGNORE PLAYER
+		} else if($args[2] == 'unignore') {
+			if($ignorePlayer == true) {
+				$this->instance()->client->query('GetDetailedPlayerInfo', $args[3][0]);
+				$playerInfo = $this->instance()->client->getResponse();
+				
+				$this->instance()->client->query('UnIgnore', $args[3][0]);
+				$this->chat($rights[1].' $fff'.$CommandAuthor['NickName'].'$z$s '.$settings['Color_ForceSpec'].'unignored $fff'.$playerInfo['NickName'].'$z$g$s'.$settings['Color_ForceSpec'].'!', $settings['Color_ForceSpec']);
+			}
+		
 		//SHOW PLAYERLIST FOR ADMINS
 		} else if($args[2] == 'adminplayers') {
 			$this->instance()->show_playerlist($CommandAuthor['Login'], true, 0);
@@ -667,6 +714,9 @@ class chat_admin extends FoxControlPlugin {
 			} else $this->sendError($CommandAuthor['Login']);
 		}
 	}
+	public function onBeginMap($args) {
+		$this->getScriptSettings();
+	}
 	public function onManialinkPageAnswer($args) {
 		if($args[2] == $this->mlids[0]) {
 			$this->closeMl($this->mlids[0], $args[1]);
@@ -707,6 +757,10 @@ class chat_admin extends FoxControlPlugin {
 		$context = stream_context_create($options);
 		return @file_get_contents($url,true,$context );
     }
+	public function getScriptSettings() {
+		$this->instance()->client->query('GetModeScriptSettings');
+		$this->scriptSettings = $this->instance()->client->getResponse();
+	}
 }
 
 //Manialinks

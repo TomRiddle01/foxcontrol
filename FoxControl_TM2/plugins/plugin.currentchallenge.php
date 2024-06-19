@@ -24,9 +24,9 @@ class plugin_currentchallenge extends FoxControlPlugin {
 
 		$color_newchallenge = str_replace('$', '', $settings['Color_NewChallenge']);
 		
-		$this->chat('New challenge: $fff'.$args[0]['Name'].'$z$s $'.$color_newchallenge.'by $fff'.$args[0]['Author'], $color_newchallenge);
+		$this->chat('New map: $fff'.$args[0]['Name'].'$z$s $'.$color_newchallenge.'by $fff'.$args[0]['Author'], $color_newchallenge);
 		
-		console('New Challenge: '.$args[0]['Name']);
+		console('New map: '.$args[0]['Name']);
 		
 		$this->displayChallenge();
 	}
@@ -55,10 +55,10 @@ class plugin_currentchallenge extends FoxControlPlugin {
 			<quad id="arrowPrev" posn="0 0 0" sizen="20 9" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" ScriptEvents="1" />
 			<quad posn="0 0 1" sizen="20 3" style="'.$settings['default_style1'].'" substyle="'.$settings['default_substyle1'].'"/>
 			<quad posn="0 0 1" sizen="20 3" style="'.$settings['default_style1'].'" substyle="'.$settings['default_substyle1'].'"/>
-			<label posn="0.5 -0.7 2" textsize="1" text="$oCurrent Challenge"/>
-			<quad posn="1 -3 1" sizen="2 2" style="Icons128x128_1" substyle="Challenge"/>
+			<label posn="0.5 -0.7 2" textsize="1" text="$o'.$this->config->settings->names->headline_current_challenge.'"/>
+			<quad posn="1 -3 1" sizen="2 2" style="Icons128x128_1" substyle="NewTrack"/>
 			<label posn="3 -3 1" textsize="1" sizen="15 2" text="'.$currentChallenge['Name'].'"/>
-			<quad posn="1 -5 1" sizen="2 2" style="Icons128x128_1" substyle="ChallengeAuthor"/>
+			<quad posn="1 -5 1" sizen="2 2" style="Icons64x64_1" substyle="Buddy"/>
 			<label posn="3 -5 1" textsize="1" sizen="15 2" text="'.$currentChallenge['Author'].'"/>
 			<quad posn="1 -7 1" sizen="2 2" style="Icons64x64_1" substyle="RestartRace"/>
 			<label posn="3 -7 1" textsize="1" text="'.$this->instance()->format_time($currentChallenge['AuthorTime']).'"/>
@@ -68,10 +68,10 @@ class plugin_currentchallenge extends FoxControlPlugin {
 			<quad id="arrowNext" posn="0 0 0" sizen="20 9" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" ScriptEvents="1" />
 			<quad posn="0 0 1" sizen="20 3" style="'.$settings['default_style1'].'" substyle="'.$settings['default_substyle1'].'"/>
 			<quad posn="0 0 1" sizen="20 3" style="'.$settings['default_style1'].'" substyle="'.$settings['default_substyle1'].'"/>
-			<label posn="0.5 -0.7 2" textsize="1" text="$oNext Challenge"/>
-			<quad posn="1 -3 1" sizen="2 2" style="Icons128x128_1" substyle="Challenge"/>
+			<label posn="0.5 -0.7 2" textsize="1" text="$o'.$this->config->settings->names->headline_next_challenge.'"/>
+			<quad posn="1 -3 1" sizen="2 2" style="Icons128x128_1" substyle="NewTrack"/>
 			<label posn="3 -3 1" textsize="1" sizen="15 2" text="'.$nextChallenge['Name'].'"/>
-			<quad posn="1 -5 1" sizen="2 2" style="Icons128x128_1" substyle="ChallengeAuthor"/>
+			<quad posn="1 -5 1" sizen="2 2" style="Icons64x64_1" substyle="Buddy"/>
 			<label posn="3 -5 1" textsize="1" sizen="15 2" text="'.$nextChallenge['Author'].'"/>
 			<quad posn="1 -7 1" sizen="2 2" style="Icons64x64_1" substyle="RestartRace"/>
 			<label posn="3 -7 1" textsize="1" text="'.$this->instance()->format_time($nextChallenge['AuthorTime']).'"/>

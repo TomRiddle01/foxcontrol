@@ -24,4 +24,5 @@ $admin_add_track = true;
 $admin_delete_track = true;
 $admin_delete_record = true;
 $forceSpec = true;
+$ignorePlayer = true;
 ?>

@@ -142,16 +142,16 @@ class window extends FoxControlPlugin
 		$content_width = $ml_code_x - 4;
 		
 		//Create window header code
-		$ml_code = '';
-		
+		$frame_start = '';
+		$ml_display_code = '';
 		//Create content code
 		if($fc_window['UseCode'] == true) //Code
 		{
-			$ml_code .= '<frame posn="'.(-$ml_code_x/2).' '.($ml_code_y-2).' 2">'.$fc_window['Code'].'</frame>';
+			$ml_display_code .= '<frame posn="'.(-$ml_code_x/2).' '.($ml_code_y-2).' 2">'.$fc_window['Code'].'</frame>';
 		}
 		elseif($fc_window['Table'] == true) //Table
 		{
-			$ml_code .= $this->createTable();
+			$ml_display_code .= $this->createTable();
 		}
 		else
 		{
@@ -159,22 +159,26 @@ class window extends FoxControlPlugin
 			while(isset($fc_window['Content'][$i]))
 			{
 				$content_mly = $content_y - $i * 2.5;
-				if($fc_window['TextAlign'] == 'center' || $fc_window['TextAlign'] == 'Center') $ml_code .= '<label posn="'.($content_x+$content_width/2).' '.$content_mly.' 5" sizen="'.$content_width.' 2" halign="center" textsize="'.$fc_window['FontSize'].'" text="'.$fc_window['Content'][$i].'" autonewline="0"/>';
-				else $ml_code .= '<label posn="'.$content_x.' '.$content_mly.' 5" sizen="'.$content_width.' 2" textsize="'.$fc_window['FontSize'].'" text="'.$fc_window['Content'][$i].'" autonewline="0"/>';
+				if($fc_window['TextAlign'] == 'center' || $fc_window['TextAlign'] == 'Center') $ml_display_code .= '<label posn="'.($content_x+$content_width/2).' '.$content_mly.' 1" sizen="'.$content_width.' 2" halign="center" textsize="'.$fc_window['FontSize'].'" text="'.$fc_window['Content'][$i].'" autonewline="0"/>';
+				else $ml_display_code .= '<label posn="'.$content_x.' '.$content_mly.' 1" sizen="'.$content_width.' 2" textsize="'.$fc_window['FontSize'].'" text="'.$fc_window['Content'][$i].'" autonewline="0"/>';
 				$i++;
 			}
 		}
 		
-		$ml_display_code = '<quad posn="0 '.$ml_code_y.' 1" sizen="'.$fc_window['SizeX'].' '.$fc_window['SizeY'].'" halign="center" style="'.$settings['default_window_style'].'" substyle="'.$settings['default_window_substyle'].'"/>
-		<quad posn="'.$title_bg_x.' '.($ml_code_y - 0.4).' 3" sizen="'.$title_bg_width.' 2.5" halign="center" style="BgsPlayerCard" substyle="BgActivePlayerScore"/>
-		<label posn="'.$title_x.' '.$title_y.' 4" textsize="2" text="$o$FFF'.$fc_window['Title'].'"/>';
-		if($fc_window['Close'] == true) $ml_display_code .= '<quad posn="'.$close_x.' '.($ml_code_y - 0.4).' 4" sizen="2.5 2.5" style="BgsPlayerCard" substyle="BgActivePlayerScore"/>';
-		if($fc_window['Close'] == true) $ml_display_code .= '<quad posn="'.$close_x.' '.($ml_code_y - 0.4).' 5" sizen="2.5 2.5" style="Icons64x64_1" substyle="Close" action="'.$this->mlids[0].'"/>';
-		$ml_display_code .= $ml_code;
+		$ml_display_code .= '
+			<quad posn="0 '.$ml_code_y.' 0" sizen="'.$fc_window['SizeX'].' '.$fc_window['SizeY'].'" halign="center" style="'.$settings['default_window_style'].'" substyle="'.$settings['default_window_substyle'].'"/>
+			<quad posn="'.$title_bg_x.' '.($ml_code_y - 0.4).' 1" sizen="'.$title_bg_width.' 2.5" halign="center" style="BgsPlayerCard" substyle="BgActivePlayerScore"/>
+			<label posn="'.$title_x.' '.$title_y.' 2" sizen="'.$fc_window['SizeX'].' '.($fc_window['SizeY'] - 10).'" textsize="2" text="$o$FFF'.$fc_window['Title'].'"/>';
+		
+		if($fc_window['Close'] == true) $ml_display_code .= '<quad posn="'.$close_x.' '.($ml_code_y - 0.4).' 1" sizen="2.5 2.5" style="BgsPlayerCard" substyle="BgActivePlayerScore"/>';
+		if($fc_window['Close'] == true) $ml_display_code .= '<quad posn="'.$close_x.' '.($ml_code_y - 0.4).' 2" sizen="2.5 2.5" style="Icons64x64_1" substyle="Close" action="'.$this->mlids[0].'"/>';
 		
 		if($fc_window['UseButtons'] == true) $ml_display_code .= $this->createButtonsCode();
 		$fc_window['PlayerButtons'][$fc_window['Uses']] = $fc_window['Buttons'];
 		$fc_window['ButtonToPlayer'][$fc_window['Uses']] = $player;
+		
+		$frame_end = '';
+		$ml_display_code = $frame_start.$ml_display_code.$frame_end;
 		
 		//Display manialink
 		if(trim($player)!=='')
@@ -261,9 +265,9 @@ class window extends FoxControlPlugin
 			{
 				if(trim($fc_window['Buttons'][$i]['text']) !== '')
 				{
-					$bc .= '<quad posn="'.$button_pos.' '.($fc_window['PosY'] - $this->calculateHeight() + 2.4).' 4" sizen="'.$button_width.' 2" style="BgsPlayerCard" substyle="BgRacePlayerName"/>';
-					$bc .= '<quad posn="'.$button_pos.' '.($fc_window['PosY'] - $this->calculateHeight() + 2.4).' 6" sizen="'.$button_width.' 2" style="BgsPlayerCard" substyle="BgCardSystem" action="'.($this->mlids[1] + $i).'"/>';
-					$bc .= '<label posn="'.($button_pos + ($button_width / 2)).' '.($fc_window['PosY'] - $this->calculateHeight() + 2.5).' 8" sizen="'.$button_width.' 2.5" textsize="2" text="$o'.$fc_window['Buttons'][$i]['text'].'" halign="center"/>';
+					$bc .= '<quad posn="'.$button_pos.' '.($fc_window['PosY'] - $this->calculateHeight() + 2.4).' 1" sizen="'.$button_width.' 2" style="BgsPlayerCard" substyle="BgRacePlayerName"/>';
+					$bc .= '<quad posn="'.$button_pos.' '.($fc_window['PosY'] - $this->calculateHeight() + 2.4).' 2" sizen="'.$button_width.' 2" style="BgsPlayerCard" substyle="BgCardSystem" action="'.($this->mlids[1] + $i).'"/>';
+					$bc .= '<label posn="'.($button_pos + ($button_width / 2)).' '.($fc_window['PosY'] - $this->calculateHeight() + 2.5).' 3" sizen="'.$button_width.' 2.5" textsize="2" text="$o'.$fc_window['Buttons'][$i]['text'].'" halign="center"/>';
 				}
 				$button_pos = $button_pos + $button_width;
 			}
@@ -281,9 +285,9 @@ class window extends FoxControlPlugin
 			{
 				if(trim($fc_window['Buttons'][$i]['text']) !== '')
 				{
-					$bc .= '<quad posn="'.$buttons_pos.' '.($fc_window['PosY'] - $this->calculateHeight() + 2.4).' 4" sizen="'.$fc_window['Buttons'][$i]['size'].' 2" style="BgsPlayerCard" substyle="BgRacePlayerName"/>';
-					$bc .= '<quad posn="'.$buttons_pos.' '.($fc_window['PosY'] - $this->calculateHeight() + 2.4).' 6" sizen="'.$fc_window['Buttons'][$i]['size'].' 2" style="BgsPlayerCard" substyle="BgCardSystem" action="'.($this->mlids[1] + $i).'"/>';
-					$bc .= '<label posn="'.($buttons_pos + ($fc_window['Buttons'][$i]['size'] / 2)).' '.($fc_window['PosY'] - $this->calculateHeight() + 2.5).' 8" sizen="'.$fc_window['Buttons'][$i]['size'].' 2.5" textsize="2" text="$o'.$fc_window['Buttons'][$i]['text'].'" halign="center"/>';
+					$bc .= '<quad posn="'.$buttons_pos.' '.($fc_window['PosY'] - $this->calculateHeight() + 2.4).' 1" sizen="'.$fc_window['Buttons'][$i]['size'].' 2" style="BgsPlayerCard" substyle="BgRacePlayerName"/>';
+					$bc .= '<quad posn="'.$buttons_pos.' '.($fc_window['PosY'] - $this->calculateHeight() + 2.4).' 2" sizen="'.$fc_window['Buttons'][$i]['size'].' 2" style="BgsPlayerCard" substyle="BgCardSystem" action="'.($this->mlids[1] + $i).'"/>';
+					$bc .= '<label posn="'.($buttons_pos + ($fc_window['Buttons'][$i]['size'] / 2)).' '.($fc_window['PosY'] - $this->calculateHeight() + 2.5).' 3" sizen="'.$fc_window['Buttons'][$i]['size'].' 2.5" textsize="2" text="$o'.$fc_window['Buttons'][$i]['text'].'" halign="center"/>';
 				}
 				$buttons_pos = $buttons_pos + $fc_window['Buttons'][$i]['size'];
 			}
@@ -391,9 +395,9 @@ class window extends FoxControlPlugin
 				$text = str_replace('id=\''.$link.'\' ', '', $text);
 				$text = str_replace('id=\''.$link.'\'', '', $text);
 				$text = str_replace('</td>', '', $text);
-				if($align_center == true) $table .= '<label posn="'.($posx+(($width)/2)).' '.$posy.' 4" sizen="'.($width - 0.5).' 2" textsize="'.$fc_window['FontSize'].'" halign="center" text="$fff'.$text.'"/>';
-				else $table .= '<label posn="'.$posx.' '.$posy.' 4" sizen="'.($width - 0.5).' 2" textsize="'.$fc_window['FontSize'].'" text="$fff'.$text.'"/>';
-				if(trim($link) !== '') $table .= '<quad posn="'.$posx.' '.$posy.' 4" sizen="'.$width.' 2.25" style="'.$fc_window['TableLink']['Style'].'" substyle="'.$fc_window['TableLink']['SubStyle'].'" action="'.$link.'"/>';
+				if($align_center == true) $table .= '<label posn="'.($posx+(($width)/2)).' '.$posy.' 2" sizen="'.($width - 0.5).' 2" textsize="'.$fc_window['FontSize'].'" halign="center" text="$fff'.$text.'"/>';
+				else $table .= '<label posn="'.$posx.' '.$posy.' 2" sizen="'.($width - 0.5).' 2" textsize="'.$fc_window['FontSize'].'" text="$fff'.$text.'"/>';
+				if(trim($link) !== '') $table .= '<quad posn="'.$posx.' '.$posy.' 1" sizen="'.$width.' 2.25" style="'.$fc_window['TableLink']['Style'].'" substyle="'.$fc_window['TableLink']['SubStyle'].'" action="'.$link.'"/>';
 				$posx = $posx + $width;
 			}
 			$posy = $posy - ($fc_window['FontSize'] + 0.5);

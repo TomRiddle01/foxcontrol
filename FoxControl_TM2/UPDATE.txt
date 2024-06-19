@@ -1,13 +1,33 @@
 //* UPDATE
-//* Version:   0.7
+//* Version:   1.0
 //* Coded by:  matrix142, cyrilw, Libero, Jens
 //* Copyright: FoxRace, http://www.fox-control.de
 
 **************************
-*******v0.6 -> v0.7*******
+*******v0.7 -> v1.0*******
 **************************
+If you want to update from Beta 0.7 to Stable 1.0 please replace the following files:
 
-Please do a clean new installation!
-All files have been changed.
+- control.php
+- plugins.xml
 
-You can use your old config file and database.
+- include/admin_rights.php
+- include/class.widget.php
+- include/class.window.php
+- include/gbxdatafetcher.inc.php
+- include/op_rights.php
+- incldue/superadmin_rights.php
+
+- plugins/chat.admin.php
+- plugins/chat.player.php
+- plugins/plugin.adminpanel.php
+- plugins/plugin.currentmap.php
+- plugins/plugin.ignorelist.php
+- plugins/plugin.scorepanel.php
+- plugins/plugin.topdons.php
+- plugins/plugin.players.php
+- plugins/plugin.records.php
+- plugins/plugin.currentchallenge.php
+- plugins/plugin.dedimania.php
+
+- plugins/config/plugin.currentchallenge.config.xml

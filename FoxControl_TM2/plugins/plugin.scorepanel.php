@@ -160,7 +160,7 @@ class plugin_scorepanel extends FoxControlPlugin {
 					if(!empty($challengeInfo)) {
 						$code_toptracks .= '
 						<label posn="'.($this->posn_toptracks[0]+0.5).' '.($this->posn_toptracks[1]-6-$y).' 5" sizen="4.5 2" textsize="1" text="$o$09f'.$row->vote.'"/>
-						<label posn="'.($this->posn_toptracks[0]+4.5).' '.($this->posn_toptracks[1]-6-$y).' 5" sizen="15 2" textsize="1" text="'.htmlspecialchars(stripslashes($row->challengename)).'"/>';
+						<label posn="'.($this->posn_toptracks[0]+5).' '.($this->posn_toptracks[1]-6-$y).' 5" sizen="14.5 2" textsize="1" text="'.htmlspecialchars(stripslashes($row->challengename)).'"/>';
 					}
 			
 					$y += 1.8;
@@ -178,9 +178,17 @@ class plugin_scorepanel extends FoxControlPlugin {
 			
 				if($row = $sql->fetch_object()) {
 					if($this->instance()->formattime_hour($row->timeplayed) != 0) {
+						$time = $this->instance()->formattime_hour($row->timeplayed);
+					} else if($this->instance()->formattime_minute($row->timeplayed) != 0) {
+						$time = $this->instance()->formattime_minute($row->timeplayed);
+					} else {
+						$time = 0;
+					}
+					
+					if($time != 0) {
 						$code_mostactive .= '
-						<label posn="'.($this->posn_mostactive[0]+0.5).' '.($this->posn_mostactive[1]-6-$y).' 5" sizen="4.5 2" textsize="1" text="$o$09f'.$this->instance()->formattime_hour($row->timeplayed).'"/>
-						<label posn="'.($this->posn_mostactive[0]+4.5).' '.($this->posn_mostactive[1]-6-$y).' 5" sizen="15 2" textsize="1" text="'.htmlspecialchars(stripslashes($row->nickname)).'"/>';
+						<label posn="'.($this->posn_mostactive[0]+0.5).' '.($this->posn_mostactive[1]-6-$y).' 5" sizen="4.5 2" textsize="1" text="$o$09f'.$time.'"/>
+						<label posn="'.($this->posn_mostactive[0]+5).' '.($this->posn_mostactive[1]-6-$y).' 5" sizen="14.5 2" textsize="1" text="'.htmlspecialchars(stripslashes($row->nickname)).'"/>';
 			
 						$y += 1.8;
 					}
@@ -194,8 +202,8 @@ class plugin_scorepanel extends FoxControlPlugin {
 			$nca = $this->instance()->client->getResponse();
 			
 			$code_nexttrack = '
-			<quad posn="'.($this->posn_nexttrack[0]+0.5).' '.($this->posn_nexttrack[1]-5.75).' 5" sizen="2 2" style="Icons128x128_1" substyle="Challenge" />
-			<quad posn="'.($this->posn_nexttrack[0]+0.5).' '.($this->posn_nexttrack[1]-7.75).' 5" sizen="2 2" style="Icons128x128_1" substyle="ChallengeAuthor" />
+			<quad posn="'.($this->posn_nexttrack[0]+0.5).' '.($this->posn_nexttrack[1]-5.75).' 5" sizen="2 2" style="Icons128x128_1" substyle="NewTrack" />
+			<quad posn="'.($this->posn_nexttrack[0]+0.5).' '.($this->posn_nexttrack[1]-7.75).' 5" sizen="2 2" style="Icons64x64_1" substyle="Buddy" />
 			<quad posn="'.($this->posn_nexttrack[0]+0.5).' '.($this->posn_nexttrack[1]-9.75).' 5" sizen="2 2" style="Icons128x128_1" substyle="United" />
 			<quad posn="'.($this->posn_nexttrack[0]+0.5).' '.($this->posn_nexttrack[1]-11.75).' 5" sizen="2 2" style="Icons128x128_1" substyle="Manialink" />
 			<quad posn="'.($this->posn_nexttrack[0]+0.5).' '.($this->posn_nexttrack[1]-13.75).' 5" sizen="2 2" style="Icons64x64_1" substyle="RestartRace" />

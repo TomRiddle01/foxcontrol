@@ -293,7 +293,7 @@ class plugin_menu extends FoxControlPlugin {
 				$this->instance()->client->query('ForceSpectator', $args[1], 1);
 			
 				$this->displayManialinkToLogin($args[1], '
-				<quad posn="0 -27 1" sizen="25 4" halign="center" style="Bgs1InRace" substyle="NavButtonBlink" action="'.$this->mlids[25].'" />
+				<quad posn="0 -27 1" sizen="25 4" halign="center" style="'.$settings['default_style1'].'" substyle="'.$settings['default_substyle1'].'" action="'.$this->mlids[25].'" />
 				<label posn="0 -28 2" halign="center" style="TextPlayerCardName" text="$o$fffClick here to play!" action="'.$this->mlids[25].'" />',
 				$this->mlids[25]);
 			}else if($args[2] == $this->mlids[25]){

@@ -38,6 +38,7 @@ class chat_player extends FoxControlPlugin {
 		if($args[2] == 'afk') {
 			$this->instance()->chat_with_nick('$09fA$fffway $09fF$fffrom $09fK$fffeyboard', $CommandAuthor['Login']);
 			$this->instance()->client->query('ForceSpectator', $CommandAuthor['Login'], 1);
+			$this->instance()->client->query('ForceSpectator', $CommandAuthor['Login'], 0);
 			
 			$this->displayManialinkToLogin($CommandAuthor['Login'], '<quad posn="0 -27 1" sizen="25 4" halign="center" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" action="'.$this->mlids[0].'" /><label posn="0 -28 2" halign="center" style="TextPlayerCardName" text="$o$fffClick here to play!" action="'.$this->mlids[0].'" />', $this->mlids[0]);
 		

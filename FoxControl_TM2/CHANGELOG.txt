@@ -1,18 +1,19 @@
 //* Changelog
-//* Version:   0.7
+//* Version:   1.0
 //* Coded by:  matrix142, cyrilw, Libero, Jens
 //* Copyright: FoxRace, http://www.fox-control.de
 
 **************************
-*******v0.6 -> v0.7*******
+*******v0.7 -> v1.0*******
 **************************
-- New Plugin: plugin.serverswitch.php => Serverswitch Plugin
-- Bug fix: plugin.scorepanel.php => Most active hasn't been updated
-- Bug fix: plugin.records.php => LiveRankings weren't updated
-- Bug fix: plugin.topdons.php => TopDons weren't correctly displayed
-- Bug fix: plugin.simple_buttons.php => Links didn't work correctly
-- Changes: chat.admin.php => Maps with custom GameModes can be added now
-- Changes: plugin.adminpanel.php => Little adaption
-- Changes: class.widget.php => Little adaptions
-- Changes: plugin.player.php => Little adaption
-- Changes: ScriptMode integrated
+- Scriptsettings can be set ingame => Command: /scriptsettings
+- Added ignore/unignore function to ignore chat messages of Players
+- New plugin.ignorelist.php to get a list of all ignored players
+- Added spec/unspec button in Admin PlayerList
+- Fixed error in manager.plugins.php => Sometimes a crash when trying to activate/deactivate a plugin
+- Bug fix: plugin.topdons.php => TopDons were displayed the wrong order
+- Changes: plugin.records.php => Little adaptions
+- Changes: plugin.currentchallenge.php => Little adaptions
+- Changes: plugin.adminpanel.php => Little adaptions
+- Changes: chat.admin.php => Little adaptions
+- Changes: plugin.scorepanel.php => Little adaptions
