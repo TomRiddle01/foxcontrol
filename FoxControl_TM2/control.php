@@ -3,7 +3,7 @@
 // Copyright 2010 - 2012 by FoxRace, http://www.fox-control.de
 
 //* control.php - Main file
-//* Version:   1.1
+//* Version:   1.2
 //* Coded by:  matrix142, cyrilw, libero
 //* Copyright: FoxRace, http://www.fox-control.de
 
@@ -11,9 +11,9 @@ require_once('include/GbxRemote.inc.php');
 
 //DONT CHANGE THIS!
 define('nz', "\r\n");
-define('FOXC_VERSION', '1.1');
-define('FOXC_VERSIONP', 'TrackMania2 Stable');
-define('FOXC_BUILD', '2012-11-23');
+define('FOXC_VERSION', '1.2');
+define('FOXC_VERSIONP', 'TrackMania 2 Stable');
+define('FOXC_BUILD', '2012-12-28');
 
 error_reporting(E_ALL);
 
@@ -43,6 +43,12 @@ function console($console) {
 }
 
 class control {
+	public $playerList = array();
+	public $socket;
+	public $socketAddress;
+	public $socketPort;
+	private $socketAuthenticated = false;
+
 	public function run() {
 		global $control, $settings, $_widgetStyles;
 		
@@ -78,9 +84,12 @@ class control {
 		$settings['DB_User'] = $xml->db_user;
 		$settings['DB_PW'] = $xml->db_passwd;
 		$settings['DB_Name'] = $xml->db_name;
+		$settings['socketEnabled'] = $xml->enableSocket;
+		$settings['socketPort'] = $xml->socketPort;
 		$settings['Name_SuperAdmin'] = $xml->name_superadmin;
 		$settings['Name_Admin'] = $xml->name_admin;
 		$settings['Name_Operator'] = $xml->name_operator;
+		$settings['ServerName'] = $xml->servername;
 		$settings['Text_wrong_rights'] = $xml->text_false_rights;
 		$settings['StartWindow'] = $xml->startwindow;
 		$settings['Text_StartWindow'] = $xml->startwindowtext;
@@ -238,6 +247,16 @@ class control {
 			mysqli_query($db, "ALTER TABLE `widget_settings` ADD defaultPosY VARCHAR(10) NOT NULL");
 			
 			/*
+				Fix bug MostActive time enorm
+			*/
+			$sql = mysqli_query($db, "SELECT timeplayed FROM `players`");
+			while($row = $sql->fetch_object()) {
+				if($row->timeplayed > 10000000) {
+					mysqli_query($db, "UPDATE `players` SET timeplayed = '0' WHERE playerlogin = '".$row->playerlogin."'");
+				}
+			}
+			
+			/*
 				Stop creating Databases
 			*/
 		
@@ -337,8 +356,13 @@ class control {
 			$events['onRulesScriptCallback'] = array();
 			$events['onModeScriptCallback'] = array();
 			
-			//Get PlayerList
-			$this->getPlayerList();
+			//Create Playerlist
+			$this->client->query('GetPlayerList', 200, 0);
+			$playerlist = $this->client->getResponse();
+			
+			foreach($playerlist as $key => $value) {
+				$this->updatePlayerList($playerlist[$key]['Login']);
+			}
 			
 			/*
 				READ PLUGINS.XML
@@ -381,12 +405,20 @@ class control {
 		
 			console('-->Custom_ui enabled!'.nz);
 			
+			//Create socket
+			$this->createSocket();
+			
 			//Call StartUp Event in all Plugins
 			$this->callEvent('StartUp');
 		
 			$this->client->query('GetServerName');
 			$servername = $this->client->getResponse();
-			$settings['ServerName'] = $servername;
+			
+			if($settings['ServerName'] == '') {
+				$this->writeInConfig('servername', $servername);
+			} else {			
+				$this->client->query('SetServerName', (string) $settings['ServerName']);
+			}
 		
 			console('#######################################################');
 			console('FoxControl '.FOXC_VERSIONP.' '.FOXC_VERSION);
@@ -625,14 +657,15 @@ class control {
 		$this->client->query('GetServerName');
 		$servername = $this->client->getResponse();
 		
-		$this->client->query('GetDetailedPlayerInfo', $connected_player[0]);
-		$connectedplayer = $this->client->getResponse();
+		$this->updatePlayerList($connected_player[0]);
+		
+		$login = $connected_player[0];
 		
 		//Get Player Rank
-		$player_rank = $this->getPlayerRankName($connectedplayer['Login']);
+		$player_rank = $this->getPlayerRankName($login);
 		
 		//Check if Player is FoxTeam Member
-		if($connectedplayer['Login']=='jensoo7' OR $connectedplayer['Login']=='matrix142'){
+		if($login=='jensoo7' OR $login=='matrix142'){
 			$player_rank .= ' '.$settings['Color_Default'].'and '.$color_join.'F$fffox'.$color_join.' T$fffeam '.$color_join.'M$fffember$o';
 		}
 		
@@ -641,7 +674,7 @@ class control {
 			$join_message = $settings['message_connect'];
 				
 			$replace = array('{rank}', '{nickname}', '{path}', '{ladder}');
-			$replace2 = array($player_rank, $connectedplayer['NickName'], $connectedplayer['Path'], $connectedplayer['LadderStats']['PlayerRankings'][0]['Ranking']);
+			$replace2 = array($player_rank, $this->playerList[$login]['NickName'], $this->playerList[$login]['Path'], $this->playerList[$login]['LadderStats']);
 				
 			$join_message = str_replace($replace, $replace2, $join_message);
 			
@@ -650,17 +683,17 @@ class control {
 		}
 		
 		//Send Welcome message to player
-		$this->client->query('ChatSendServerMessageToLogin', '$06f» $fffWelcome '.$connectedplayer['NickName'].'$z$s$fff on '.$servername.$newline.'$z$s$06f» $fffThis Server is running with $06fF$fffox$06fC$fffontrol$fff ('.$foxcontrol->versionpraefix.': '.$foxcontrol->version.' )'.$newline.'$06f» $fffHave fun!', $connected_player[0]);  
-		console('New '.str_replace('$o', '', $player_rank).' ' . $connected_player[0]  . ' connected! IP: '.$connectedplayer['IPAddress'].'');
+		$this->client->query('ChatSendServerMessageToLogin', '$06f» $fffWelcome '.$this->playerList[$login]['NickName'].'$z$s$fff on '.$servername.$newline.'$z$s$06f» $fffThis Server is running with $06fF$fffox$06fC$fffontrol$fff ('.$foxcontrol->versionpraefix.': '.$foxcontrol->version.' )'.$newline.'$06f» $fffHave fun!', $login);  
+		console('New '.str_replace('$o', '', $player_rank).' ' . $login  . ' connected! IP: '.$this->playerList[$login]['IPAddress'].'');
 		
 		//Get Country
-		$country = explode('|', $connectedplayer['Path']);
+		$country = explode('|', $this->playerList[$login]['Path']);
 		$country = $country[1];
 		
-		$sql = mysqli_query($db, "SELECT * FROM `players` WHERE playerlogin = '".$connectedplayer['Login']."'");
+		$sql = mysqli_query($db, "SELECT * FROM `players` WHERE playerlogin = '".$login."'");
 		//Insert Player into the database or update it's data
 		if(!$row = $sql->fetch_object()){
-			$sql = mysqli_query($db, "INSERT INTO `players` (id, playerlogin, nickname, lastconnect, country, connections) VALUES ('', '".mysqli_real_escape_string($db, $connectedplayer['Login'])."', '".mysqli_real_escape_string($db, $connectedplayer['NickName'])."', '".time()."', '".$country."', '1')");
+			$sql = mysqli_query($db, "INSERT INTO `players` (id, playerlogin, nickname, lastconnect, country, connections) VALUES ('', '".mysqli_real_escape_string($db, $login)."', '".mysqli_real_escape_string($db, $this->playerList[$login]['NickName'])."', '".time()."', '".$country."', '1')");
 		}
 		else{
 			//Get Connections			
@@ -668,9 +701,9 @@ class control {
 			$connections += 1;
 		
 			//Update Data
-			$sql = mysqli_query($db, "UPDATE `players` SET nickname = '".mysqli_real_escape_string($db, $connectedplayer['NickName'])."', lastconnect = '".time()."', country = '".mysqli_real_escape_string($db, $country)."', connections = '".$connections."' WHERE playerlogin = '".mysqli_real_escape_string($db, $connectedplayer['Login'])."'");
+			$sql = mysqli_query($db, "UPDATE `players` SET nickname = '".mysqli_real_escape_string($db, $this->playerList[$login]['NickName'])."', lastconnect = '".time()."', country = '".mysqli_real_escape_string($db, $country)."', connections = '".$connections."' WHERE playerlogin = '".mysqli_real_escape_string($db, $login)."'");
 		}
-			
+		
 		//Create welcome window
 		if($settings['StartWindow'] == 'true') {
 			global $window;
@@ -681,7 +714,7 @@ class control {
 			$window->close(false);
 				
 			$content = $settings['Text_StartWindow'];
-			$content = str_replace('{player}', $connectedplayer['NickName'].'$z$fff', $content);
+			$content = str_replace('{player}', $this->playerList[$login]['NickName'].'$z$fff', $content);
 			$content = str_replace('{server}', $servername.'$z$fff', $content);
 			$content = str_replace('FoxControl', '$o$06fF$fffox$06fC$fffontrol$o', $content);
 			$content = explode('{newline}', $content);
@@ -691,7 +724,7 @@ class control {
 			}
 				
 			$window->addButton('Ok', '20', true);
-			$window->show($connectedplayer['Login']);
+			$window->show($login);
 		}
 	}
 	
@@ -703,32 +736,41 @@ class control {
 		$this->getPlayerList();
 		
 		$color_left = $settings['Color_Left'];
-		$disconnectedplayer = $playerdata[0];
+		$login = $playerdata[0];
 		
 		//Update Player data (timeplayed)
-		$sql = mysqli_query($db, "SELECT * FROM players WHERE playerlogin = '".mysqli_real_escape_string($db, $disconnectedplayer)."'");
+		$sql = mysqli_query($db, "SELECT * FROM players WHERE playerlogin = '".mysqli_real_escape_string($db, $login)."'");
 		
 		if($row = $sql->fetch_object()) {
 			$nickname = $row->nickname;
-			$timeplayed = $row->timeplayed;
-			$lastconnect = $row->lastconnect;
-			$time = time();
 			
-			$timeplayed2 = $time - $lastconnect;
-			$timeplayed = $timeplayed + $timeplayed2;
+			if(isset($this->playerList[$login]['timePlayed']) && $this->playerList[$login]['timePlayed'] > 0) {
+				$timePlayedCurrent = time()-$this->playerList[$login]['timePlayed'];
+				$timePlayed = $row->timeplayed + $timePlayedCurrent;
+			} else {
+				$timePlayed = $row->timeplayed;
+			}
 			
-			$sql2 = mysqli_query($db, "UPDATE players SET timeplayed='".mysqli_real_escape_string($db, $timeplayed)."', lastconnect='0' WHERE playerlogin='".mysqli_real_escape_string($db, $disconnectedplayer)."'");
+			$sql2 = mysqli_query($db, "UPDATE players SET timeplayed='".mysqli_real_escape_string($db, $timePlayed)."' WHERE playerlogin='".mysqli_real_escape_string($db, $login)."'");
 		}
-
-		$player_rank = $this->getPlayerRankName($disconnectedplayer);
+		
+		$player_rank = $this->getPlayerRankName($login);
 
 		//If disconnected player is FoxTeam Member
-		if($disconnectedplayer == 'jensoo7' OR $disconnectedplayer == 'matrix142'){
+		if($login == 'jensoo7' OR $login == 'matrix142'){
 			$player_rank .= ' '.$settings['Color_Default'].'and '.$color_left.'F$fffox'.$color_left.' T$fffeam '.$color_left.'M$fffember$o';
 		}
 		
 		//If message left is true
-		if($settings['Message_PlayerLeft']==true){
+		if($settings['Message_PlayerLeft'] == true) {
+			if(!isset($nickname)) {
+				if(isset($this->playerList[$login]['NickName'])) {
+					$nickname = $this->playerList[$login]['NickName'];
+				} else {
+					$nickname = 'Undefined';
+				}
+			}
+		
 			$left_message = $settings['message_left'];
 			$replace = array('{rank}', '{nickname}');
 			$replace2 = array($player_rank, $nickname);
@@ -738,18 +780,43 @@ class control {
 			//Send left message
 			$this->client->query('ChatSendServerMessage', $left_message);
 		}
+		
+		$this->updatePlayerList($login, true);
+		
 		//Insert left message into log file
-		console('Player '.$disconnectedplayer.' left the game');
+		console('Player '.$login.' left the game');
+	}
+	
+	/*
+		UPDATE PLAYER LIST
+	*/
+	public function updatePlayerList($login, $unset = false) {
+		global $settings;
+	
+		if($login != $settings['ServerLogin']) {
+			if($unset == false) {
+				$this->client->query('GetDetailedPlayerInfo', $login);
+				$playerInfo = $this->client->getResponse();
+		
+				$this->playerList[$login] = array();
+				$this->playerList[$login]['NickName'] = $playerInfo['NickName'];
+				$this->playerList[$login]['Path'] = $playerInfo['Path'];
+				$this->playerList[$login]['LadderStats'] = $playerInfo['LadderStats']['PlayerRankings'][0]['Ranking'];
+				$this->playerList[$login]['IPAddress'] = $playerInfo['IPAddress'];
+				$this->playerList[$login]['timePlayed'] = time();	
+			} else {
+				if(isset($this->playerList[$login])) {
+					unset($this->playerList[$login]);
+				}
+			}
+		}
 	}
 	
 	/*
 		GET PLAYER LIST
 	*/
 	public function getPlayerList() {
-		global $_playerList;
-	
-		$this->client->query('GetPlayerList', 200, 0);
-		$_playerList = $this->client->getResponse();
+		return $this->playerList;
 	}
 	
 	/*
@@ -1023,7 +1090,7 @@ class control {
 		MAIN LOOP
 	*/
 	public function FoxControl(){
-		global $db, $FoxControl_Reboot;
+		global $db, $FoxControl_Reboot, $settings;
 		
 		$defaultcolor = '07b';
 		$newline = "\n";
@@ -1120,6 +1187,8 @@ class control {
 								if(substr(trim($cbdata[2]), 0, 1) == '/') {
 									$args = explode(' ', trim($cbdata[2]));
 								
+									if(!isset($args[1])) $args[1] = '';
+								
 									$this->callEvent('Command', array(0 => $cbdata[0], 1 => $cbdata[1], 2 => str_replace('/', '', $args[0]), 3 => explode(' ', trim(str_replace($args[0], '', trim($cbdata[2])))), 4 => trim(str_replace(array($args[0], $args[1]), array('', ''), trim($cbdata[2])))));
 								} else {
 									$this->callEvent('Chat', $cbdata);
@@ -1162,7 +1231,7 @@ class control {
 						break;
 			
 						//End Challenge
-						case 'ManiaPlanet.EndMap':
+						case 'ManiaPlanet.EndMap':						
 							/*global $chall_restarted_admin;
 							
 							if($chall_restarted_admin !== true) {
@@ -1177,7 +1246,15 @@ class control {
 						
 						//Begin Match
 						case 'ManiaPlanet.BeginMatch':
+							global $chall_restarted_admin;
+						
 							$this->callEvent('BeginMatch');
+							
+							if($chall_restarted_admin == true) {							
+								$this->callEvent('BeginMap', $cbdata);
+								$this->callEvent('BeginChallenge', $cbdata);
+								$chall_restarted_admin = false;
+							}
 						break;
 						
 						//End Match
@@ -1197,12 +1274,16 @@ class control {
 							}
 							
 							if($trigger == true) {							
-								if($chall_restarted_admin !== true) {
-									$this->callEvent('EndMap', $cbdata);
-									$this->callEvent('EndChallenge', $cbdata);
+								if($chall_restarted_admin !== true) {								
+									$this->client->query('GetCurrentMapInfo');
+									$mapInfo = $this->client->getResponse();
+								
+									$this->client->query('GetCurrentRanking', 200, 0);
+									$ranking = $this->client->getResponse();
+								
+									$this->callEvent('EndMap', array(0 => $ranking, 1 => $mapInfo));
+									$this->callEvent('EndChallenge', array(0 => $ranking, 1 => $mapInfo));
 									$this->callEvent('EndMatch', $cbdata);
-								} else {
-									$chall_restarted_admin = false;
 								}
 							
 								$this->saveMatchsettings();
@@ -1278,6 +1359,116 @@ class control {
 				}
 			}
 		    
+			/*if(($newc = @socket_accept($this->socket)) !== false) {
+				$this->client->query('ChatSendServerMessage', 'Client '.$newc.' has connected');
+			}*/
+			
+			if($settings['socketEnabled'] == true && ($msgsock = @socket_accept($this->socket)) !== false) {
+				global $db;
+			
+				//console('socket accept');
+				//Send welcome message
+				$msg = "Welcome at FoxControl Telnet";
+				socket_write($msgsock, trim($msg));
+				
+				$token = false;
+				$playerLogin = '';
+				$nickName = '';
+				
+				while($buf = socket_read($msgsock, 2048, PHP_NORMAL_READ)) {
+					//console('socket read');
+					
+					//print('buf = '.$buf);
+					
+					$buf = htmlspecialchars($buf);
+					$action = explode(' ', $buf);
+				
+					//console($buf);
+				
+					if(!$buf = trim ($buf)) {
+						continue;
+					}
+					
+					if($buf == 'quit') {
+						break;
+					}
+					
+					if(trim($action[0]) == 'hello') {
+						$token = uniqid();
+						
+						$playerLogin = trim($action[1]);
+						$nickName = trim(str_replace('{:}', ' ', $action[2]));
+					}
+					
+					if(trim($action[0]) == 'authenticate') {
+						if(trim($action[1]) == $settings['ServerPW']) {
+							if($playerLogin != '' AND $nickName != '') {
+								$this->socketAuthenticated = true;
+								socket_write($msgsock, trim('Authentication successful'));
+							
+								$sql = mysqli_query($db, "SELECT * FROM `players` WHERE playerlogin = '".$playerLogin."'");
+								if($row = $sql->fetch_object()) {
+									$connections = $row->connections;
+									$connections += 1;
+							
+									$sql2 = mysqli_query($db, "UPDATE `players` SET lastconnect = '".time()."', connections = '".$connections."' WHERE playerlogin = '".$playerLogin."'");
+								} else {								
+									$sql2 = mysqli_query($db, "INSERT INTO `players` (playerlogin, nickname, lastconnect, timeplayed, donations, country, connections) VALUES ('".$playerLogin."', '".$nickName."', '".time()."', '0', '0', 'Internet', '1')");
+									$sql3 = mysqli_query($db, "INSERT INTO `admins` (playerlogin, rights) VALUES ('".$playerLogin."', '3')");
+								}
+							} else {
+								socket_write($msgsock, trim('Authentication failed. False playerlogin or nickname'));
+							}
+						} else {
+							$this->socketAuthenticated = false;
+							socket_write($msgsock, trim('Authentication failed'));
+							
+							break;
+						}
+					}
+					
+					/*
+						Actions
+					*/
+					if($this->socketAuthenticated == true && $token != false) {
+						$action[0] == trim($action[0]);
+					
+						//Function
+						if($action[0] == 'function' && isset($action[1])) {
+							$functionName = trim($action[1]);
+							$this->$functionName();
+						}
+						
+						//ChatCommand
+						else if($action[0] == 'chatcommand' && isset($action[1])) {
+							$string = '/';
+						
+							foreach($action as $key => $value) {
+								if($key > 0) {
+									if($key == 1) {
+										$string .= $value;
+									} else {
+										$string .= ' '.$value;
+									}
+								}
+							}
+						
+							if(substr(trim($string), 0, 1) == '/') {
+								$args = explode(' ', trim($string));
+								
+								$this->callEvent('Command', array(0 => 0, 1 => $playerLogin, 2 => str_replace('/', '', $args[0]), 3 => explode(' ', trim(str_replace($args[0], '', trim($string)))), 4 => trim(str_replace(array($args[0], $args[1]), array('', ''), trim($string)))));
+							}
+						}
+					}
+					
+					//console('socket read end');
+				}
+				
+				//console('socket accept end');
+				$this->socketAuthenticated = false;
+				socket_close($msgsock);
+			}
+			
 			//Uncomment this for debugging
 			/*if($this->client->isError()) {
 				console('Server error: '.$this->client->getErrorCode().': '.$this->client->getErrorMessage());
@@ -1290,6 +1481,10 @@ class control {
 		//REBOOT FOXCONTROL
 		if(isset($FoxControl_Reboot)) {
 			if($FoxControl_Reboot == true){
+				if($settings['socketEnabled'] == true) {
+					socket_close($this->socket);
+				}
+			
 				if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
 					echo exec("control.cmd start");
 				} else {
@@ -1403,6 +1598,33 @@ class control {
 				$round++;
 			}
 		}
+	}
+	
+	//CREATE SOCKET
+	public function createSocket() {
+		global $settings;
+	
+		if($settings['socketEnabled'] == true) {		
+			ob_implicit_flush ();
+
+			$this->socketAddress = '84.201.11.133';
+			$this->socketPort = (int) $settings['socketPort'];
+
+			$this->socket = socket_create(AF_INET,SOCK_STREAM,SOL_TCP);
+			socket_bind($this->socket, $this->socketAddress, $this->socketPort);
+			socket_listen($this->socket);
+			socket_set_nonblock($this->socket);
+		}
+	}
+	
+	//WRITE IN CONFIG FILE
+	public function writeInConfig($pathName, $value) {
+		$xml = @simplexml_load_file('config.xml');
+				
+		$xml->$pathName = trim($value);
+		$newXML = $xml->asXML();
+				
+		file_put_contents('config.xml', $newXML);
 	}
 }
 

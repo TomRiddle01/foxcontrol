@@ -1,6 +1,6 @@
 <?php
 //* plugin.dedimania.php - Dedimania
-//* Version:   1.0
+//* Version:   1.2
 //* Coded by:  slig, matrix142
 //* Copyright: FoxRace, http://www.fox-control.de
 
@@ -74,7 +74,7 @@ class plugin_dedimania extends FoxControlPlugin {
 
 		$this->_dm['Game'] = 'TM2';   // only TM2 is supported for Dedimania²
 		$this->_dm['Tool'] = 'FoxControl';
-		$this->_dm['ToolVersion'] = '1.0 Stable';
+		$this->_dm['ToolVersion'] = '1.2 Stable';
 		
 		//Get Posn
 		$posn_dedi = $this->getPosn('dedi_widget');
@@ -366,7 +366,7 @@ class plugin_dedimania extends FoxControlPlugin {
 						@mkdir('VReplays');
 					$vrfile = sprintf('VReplays/vreplay.%s.%d.%07d.%s.Replay.Gbx',$MapInfo['UId'],$this->_gameinfo['GameMode'],$ptimes[0]['Best'],$login);
 					@file_put_contents($vrfile,$vreplay);
-					console(nz."DM.onEndChallenge:: ValidationReplay {$vrfile} stored ({$login},{$ptimes[0]['Best']}) !".nz);
+					console("DM.onEndChallenge:: ValidationReplay {$vrfile} stored ({$login},{$ptimes[0]['Best']}) !");
 				}
 
 				// --------------------------------------------------------------
@@ -387,7 +387,7 @@ class plugin_dedimania extends FoxControlPlugin {
 		
 		$this->_xmlrpcdb->addRequest($callback,'dedimania.SetChallengeTimes',$this->_dm['SessId'],$map_info,$gmode,$ptimes,$replays);
 
-		console(nz."DM.onEndChallenge:: send dedimania.GetChallengeRecords({$MapInfo['UId']},{$MapInfo['Name']})...".nz);
+		console("DM.onEndChallenge:: send dedimania.GetChallengeRecords({$MapInfo['UId']},{$MapInfo['Name']})...");
 
 		// send immediatly dedimania.SetChallengeTimes
 		$this->_xmlrpcdb->sendRequests();
@@ -432,7 +432,7 @@ class plugin_dedimania extends FoxControlPlugin {
 
 		$this->_xmlrpcdb->addRequest($callback,'dedimania.PlayerConnect',$this->_dm['SessId'],$login,$pinfo['NickName'],$pinfo['Path'],$pinfo['IsSpectator']);
 
-		console(nz."DM.onPlayerConnect({$login}):: will send dedimania.PlayerConnect...".nz);
+		console("DM.onPlayerConnect({$login}):: will send dedimania.PlayerConnect...");
 	}
 
 
@@ -483,7 +483,7 @@ class plugin_dedimania extends FoxControlPlugin {
 
 		$this->_xmlrpcdb->addRequest($callback,'dedimania.PlayerDisconnect',$this->_dm['SessId'],$login,$option);
 
-		console(nz."DM.onPlayerDisconnect({$login}):: will send dedimania.PlayerDisconnect...".nz);
+		console("DM.onPlayerDisconnect({$login}):: will send dedimania.PlayerDisconnect...");
 	}
 
 
