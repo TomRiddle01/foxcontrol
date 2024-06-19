@@ -240,7 +240,7 @@ class plugin_players extends FoxControlPlugin {
 				
 				$rights = $this->getRights($row->playerlogin);
 				
-				$window->content('<td width="3">'.($id+1).'</td><td width="20">'.$nickname.'</td><td width="12">'.$row->playerlogin.'</td><td width="10">'.$rights[1].'</td>');
+				$window->content('<td width="3">'.($id+1).'</td><td width="20">'.htmlspecialchars($nickname).'</td><td width="12">'.$row->playerlogin.'</td><td width="10">'.$rights[1].'</td>');
 			
 				$id++;
 			}

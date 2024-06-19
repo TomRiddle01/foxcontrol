@@ -328,7 +328,6 @@ class window extends FoxControlPlugin
 	private function createTable()
 	{
 		global $fc_window, $settings;
-		
 		$table = '';
 		$posy = $fc_window['PosY'] - 3.5;
 		$sizey = 0;
@@ -347,6 +346,7 @@ class window extends FoxControlPlugin
 				$is_link = false;
 				$align_center = false;
 				$link = '';
+				$url = '';
 				$content = '';
 				if(strpos($td[$tdi], 'width') !== false)
 				{
@@ -370,7 +370,19 @@ class window extends FoxControlPlugin
 						else $link .= substr($td[$tdi], $ci, 1);
 					}
 				}
+				if(strpos($td[$tdi], 'ml=') !== false) {
+					$urlStartPos = strpos($td[$tdi], 'ml=') + 4;
+					
+					for($ci = $urlStartPos; true; $ci++) {
+						if(substr($td[$tdi], $ci, 1) == '\'') break;
+						elseif(substr($td[$tdi], $ci, 1) == '"') break;
+						elseif(substr($td[$tdi], $ci, 1) == ' ') break;
+						else $url .= substr($td[$tdi], $ci, 1);
+					}
+				}
+				
 				if(strpos($td[$tdi], 'align="center"') !== false || strpos($td[$tdi], 'align=\'center\'') !== false) $align_center = true;
+				
 				$text = $td[$tdi];
 				$text = str_replace(' width="'.$width.'">', '', $text);
 				$text = str_replace('width="'.$width.'">', '', $text);
@@ -398,6 +410,14 @@ class window extends FoxControlPlugin
 				$text = str_replace('id=\''.$link.'\'/>', '', $text);
 				$text = str_replace('id=\''.$link.'\' ', '', $text);
 				$text = str_replace('id=\''.$link.'\'', '', $text);
+				$text = str_replace('ml="'.$url.'">', '', $text);
+				$text = str_replace('ml="'.$url.'"/>', '', $text);
+				$text = str_replace('ml="'.$url.'" ', '', $text);
+				$text = str_replace('ml="'.$url.'"', '', $text);
+				$text = str_replace('ml=\''.$url.'\'>', '', $text);
+				$text = str_replace('ml=\''.$url.'\'/>', '', $text);
+				$text = str_replace('ml=\''.$url.'\' ', '', $text);
+				$text = str_replace('ml=\''.$url.'\'', '', $text);
 				$text = str_replace('</td>', '', $text);
 				
 				if($align_center == true) {
@@ -409,6 +429,11 @@ class window extends FoxControlPlugin
 				if(trim($link) !== '') {
 					$table .= 	'<quad posn="'.($posx - 0.125).' '.$posy.' 1" sizen="'.$width.' 2" style="'.$fc_window['TableLink']['Style'].'" substyle="'.$fc_window['TableLink']['SubStyle'].'" action="'.$link.'"/>
 								 <quad posn="'.($posx - 0.125).' '.$posy.' 2" sizen="'.$width.' 2" style="BgsPlayerCard" substyle="BgCardSystem" action="'.$link.'"/>';
+				}
+				
+				if(trim($url) != '') {
+					$table .= 	'<quad posn="'.($posx - 0.125).' '.$posy.' 1" sizen="'.$width.' 2" style="'.$fc_window['TableLink']['Style'].'" substyle="'.$fc_window['TableLink']['SubStyle'].'" url="'.$url.'"/>
+								 <quad posn="'.($posx - 0.125).' '.$posy.' 2" sizen="'.$width.' 2" style="BgsPlayerCard" substyle="BgCardSystem" url="'.$url.'"/>';
 				}
 				
 				if($run > 0) {

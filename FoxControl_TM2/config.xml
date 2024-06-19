@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <FoxControl_config>
 	<!-- Essential settings to run Fox Control -->
 
@@ -8,27 +8,32 @@
 	<serverpw>SERVERPW</serverpw>					<!-- Password of your Dedicated Server Account -->
 	<community_code>000000</community_code>  		<!-- Set it to 000000 -->
 	<serverIP>127.0.0.1</serverIP>					<!-- IP of your Dedicated Server. If hosted on the same host as FoxControl, set it to 127.0.0.1 -->
-	<port>5004</port>                        		<!-- XmlRcp Port of your Dedicated Server -->
-	<SuperAdminPW>SuperAdminPW</SuperAdminPW>       <!-- SuperAdmin Password of your Dedicated Server -->
+	<port>5008</port>                        		<!-- XmlRcp Port of your Dedicated Server -->
+	<SuperAdminPW>SuperAdmin123</SuperAdminPW>       <!-- SuperAdmin Password of your Dedicated Server -->
 	<nation>German</nation>                  		<!-- Nation of your Servers location -->
 	<ServerLocation>Europe/Berlin</ServerLocation> 	<!-- Set your Server location. All available locations can be found here: http://php.net/manual/en/timezones.php -->
 
 	<!-- Database Settings for Fox Control -->
 	<db_path>localhost</db_path>					<!-- Database Server - usually 'localhost' (without the apostrophes) -->
-	<db_user>foxcontrol</db_user>					<!-- Database Username -->
-	<db_passwd>DBPASSWORD</db_passwd>				<!-- Database Password -->
-	<db_name>foxcontrol</db_name>					<!-- Database Name -->
+	<db_user>DATABASE USER</db_user>					<!-- Database Username -->
+	<db_passwd>DATABASE PW</db_passwd>				<!-- Database Password -->
+	<db_name>DATABASE NAME</db_name>					<!-- Database Name -->
 
+	<!-- Socket settings -->
+	<enableSocket>false</enableSocket>				<!-- This function will be available soon :) -->
+	<socketPort>0000</socketPort>					<!-- This function will be available soon :) -->
+	
 	<!-- Name Settings -->
 	<name_superadmin>Superadmin</name_superadmin> 	<!-- Name which will be displayed on the Server for Usergroup 'Superadmin' -->
 	<name_admin>Admin</name_admin>                	<!-- Name which will be displayed on the Server for Usergroup 'Admin' -->
 	<name_operator>Operator</name_operator>       	<!-- Name which will be displayed on the Server for Usergroup 'Operator' -->
+	<servername></servername>						<!-- This Servername will be set at each start of FoxControl. The value changes if you set a new name with /set servername <name> Command. Leave empty to use default name as it's declared in dedicated_cfg.txt -->
 		
 	<!--Basic Settings -->
 	<text_false_rights>You don't have the required admin rights to do that!</text_false_rights> <!-- Text wich will be displayed on the Server, if someone has false rights -->
 
 	<startwindow>false</startwindow> <!-- Displaying a startwindow when connecting on the server. True = true; False = false -->
-		<startwindowtext>Hello {player}!{newline}This Server is running with FoxControl.{newline}Have fun on {server}!</startwindowtext> <!-- Text wich will be displayed in the startwindow -->
+	<startwindowtext>Hello {player}!{newline}This Server is running with FoxControl.{newline}Have fun on {server}!</startwindowtext> <!-- Text wich will be displayed in the startwindow -->
 		
 	<player_message_connect>true</player_message_connect> <!-- Displaying a message when a Player connects. True = true; False = false -->
 	<player_message_left>true</player_message_left> <!-- Displaying a message when a Player leaves. True = true; False = false -->
@@ -69,7 +74,7 @@
 	<default_window_substyle>ProgressBar</default_window_substyle>	<!-- Default Window Substyle -->
 	
 	<!-- Names -->
-	<menu_name>>>FOX Menu</menu_name>
+	<menu_name>» FOX Menu</menu_name>
 																		 
 	<!-- Widget Settings -->
 	<display_local_recs>true</display_local_recs> <!-- True = true, False = false -->

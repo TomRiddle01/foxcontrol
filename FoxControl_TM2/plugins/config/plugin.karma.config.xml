@@ -4,25 +4,34 @@
 	<posns>
 		<!-- POSN OF THE WIDGET -->
 		<karma>
-			<rounds>58.2 27.3</rounds> 			<!-- ROUNDS -->
-			<timeattack>58.2 27.3</timeattack> 	<!-- TIMEATTACK -->
+			<rounds>50.3 31</rounds> 			<!-- ROUNDS -->
+			<timeattack>50.3 31</timeattack> 	<!-- TIMEATTACK -->
 			<team>58.2 27.3</team> 				<!-- TEAM -->
-			<laps>58.2 27.3</laps> 				<!-- LAPS -->
-			<cup>58.2 27.3</cup> 				<!-- CUP -->
-			<stunts>58 27.3</stunts> 			<!-- STUNTS -->
-			<Platform>58 27.3</Platform> 		<!-- PLATFORM -->
+			<!-- <laps>58.2 27.3</laps> -->		<!-- LAPS -->
+			<cup>50.3 31</cup> 					<!-- CUP -->
+			<stunts>50.3 31</stunts> 			<!-- STUNTS -->
+			<Platform>50.3 31</Platform> 		<!-- PLATFORM -->
 		</karma>
 	</posns>
 	
 	<settings>
 		<!-- GENERAL -->
 		<general>
-			<show_message>1</show_message> <!-- 1 = TO ALL; 2 = ONLY TO PLAYER; 0 = NO MESSAGE -->
+			<show_message>1</show_message> 		<!-- 1 = TO ALL; 2 = ONLY TO PLAYER; 0 = NO MESSAGE -->
+			<show_on_end>1</show_on_end> 		<!-- SHOW KARMA WIDGET AT END MAP; 1 = TRUE; 0 = FALSE -->
 		</general>
 		<!-- COLOR -->
 		<color>
-			<color_voted>$0d0</color_voted> <!-- DEFAULT COLOR FOR VOTING MESSAGE -->
+			<color_voted>$0d0</color_voted> 	<!-- DEFAULT COLOR FOR VOTING MESSAGE -->
 		</color>
+		<!-- MESSAGES -->
+		<messages>
+			<very_good>very good</very_good>	<!-- VOTE MESSAGE FOR VOTE 5 -->
+			<good>good</good>					<!-- VOTE MESSAGE FOR VOTE 4 -->
+			<average>average</average>			<!-- VOTE MESSAGE FOR VOTE 3 -->
+			<bad>bad</bad>						<!-- VOTE MESSAGE FOR VOTE 2 -->
+			<very_bad>very bad</very_bad>		<!-- VOTE MESSAGE FOR VOTE 1 -->
+		</messages>
 	</settings>
 </config>
 	

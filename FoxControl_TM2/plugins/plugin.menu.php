@@ -23,7 +23,7 @@ class plugin_menu extends FoxControlPlugin {
 		RequiredRank can be 0 = Player, 1 = Moderator, 2 = Admin, 3 = SuperAdmin
 		ActionID is $this->mlids[ID];
 		
-		IDs which are already used for other items: 0 - 40
+		IDs which are already used for other items: 0 - 41
 		*/
 		
 		//Main Menu
@@ -46,6 +46,7 @@ class plugin_menu extends FoxControlPlugin {
 		$this->registerItem('System Info', 'Admin', 2, $this->mlids[15]);
 		$this->registerItem('Admin Commands', 'Admin', 1, $this->mlids[17]);
 		$this->registerItem('Reboot', 'Admin', 3, $this->mlids[16]);
+		$this->registerItem('Shutdown', 'Admin', 3, $this->mlids[41]);
 		
 			//Admin Map Submenu
 			$this->registerItem('Map List', 'Admin.Map', 1, $this->mlids[18]);
@@ -280,6 +281,24 @@ class plugin_menu extends FoxControlPlugin {
 			//Reboot
 			else if($args[2] == $this->mlids[16]){
 				$this->instance()->FoxControl_reboot();
+			}
+			//Shutdown
+			else if($args[2] == $this->mlids[41]) {
+				$window = $this->window;
+				$window->init();
+				$window->title('$fffShutdown FoxControl');
+				$window->displayAsTable(true);
+				$window->size(50, '');
+				$window->posY('40');
+				$window->target('onButtonShutdown', $this);
+				
+				$window->content('<td width="40">Do you really want to shutdown FoxControl?</td>');
+						
+				$window->addButton('Yes', '7', false);
+				$window->addButton('', '3', false);
+				$window->addButton('No', '7', true);
+				
+				$window->show($args[1]);
 			}
 			
 		/*
@@ -614,6 +633,15 @@ class plugin_menu extends FoxControlPlugin {
 			$this->displayManialinkToLogin($login, $code, $mlid);
 		}else{
 			$this->displayManialink($code, $mlid);
+		}
+	}
+	
+	/*
+	SHUTDOWN CONFIRMATION
+	*/
+	public function onButtonShutdown($args) {
+		if($args[2] == 1) {
+			$this->instance()->Foxcontrol_Shutdown();
 		}
 	}
 }

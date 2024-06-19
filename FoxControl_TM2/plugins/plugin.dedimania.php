@@ -157,7 +157,7 @@ class plugin_dedimania extends FoxControlPlugin {
 		$MapInfo = $args[0];
 		$this->_mapinfo = $MapInfo;
 		//console("DM.onBeginChallenge:: ChallengeInfo ".print_r($MapInfo,true));
-
+		
 		$this->_map = array();
 		$this->_dm['top1time'] = -1;
 

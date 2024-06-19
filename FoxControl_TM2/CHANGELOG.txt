@@ -1,22 +1,29 @@
 //* Changelog
-//* Version:   1.1
+//* Version:   1.2
 //* Coded by:  matrix142, cyrilw, Libero, Jens
 //* Copyright: FoxRace, http://www.fox-control.de
 
 **************************
-*******v1.0 -> v1.1*******
+*******v1.1 -> v1.2*******
 **************************
-- New Plugin: plugin.mostactive.php => Displays a list of mostactive players like in the scorepanel
-- New Plugin: plugin.bestmaps.php => Displays a list of the best voted maps
-- New Plugin: plugin.widgetsettings.php => Manage your widgets
-- Updated Core and all Plugins to API Version 2012-06-19
-- Fixed bug: Wrong time of LiveRankings
-- Fixed bug: Wrong sort of LiveRankings
-- Fixed bug: Mysql Timeout
-- Fixed bug: Playerlist did not open when Nicknames included special chars
-- New, better Menu structure:
-	- Added MostActive Button to the Menu
-	- Added TopDons Button to the Menu
-	- Added BestMaps Button to the Menu
-	- Added GameMode Buttons to the Admin Menu
-- Added Connections count and timeplayed row in Playerlist
+- *** New function ***: Autoupdater => Updates FoxControl automatically to the newest version! => Command: /update
+- *** New function ***: /forcemap <mapid> => Sets the specified Map to next map and skips current
+- *** New function ***: /callvote <timeout_in_secods> => Sets the specified timeout value for Callvotes
+- *** New function ***: AutoVote: Automatically disables Callvotes if a Admin is on the Server. Can be configured in /plugins/config/plugin.disablevote.config.xml
+- *** New function ***: A Servername which will be applied at each start of FoxControl can be now set in config.xml file. The value changes if you set a new name with /set servername <name> command.
+- *** New function ***: In Laps mode the Best Lap time will be shown in chat. Plugin made by toxn
+- Updated plugin.newsupdate.php to work together with the autoupdater
+- Changed the player warning window
+- Changed the position of Donate panel at map end
+- Disabled plugin.karma in Laps mode because of overlapping the laps counter
+- Changed chat messages of plugin.karma.php
+- Added Shutdown Button to the Menu => Shutdown FoxControl if needed (e.g. when started twice)
+- Fixed bug: Dedimania records haven't been sent because of a callback change
+- Fixed bug: Adminlist did not open sometimes
+- Fixed bug: TopDons list did not open sometimes
+- Fixed bug: PHP Notice in core
+- Fixed bug: Enorm MostActive time
+- Fixed bug: After forcePlayer or forceSpec the Player could not choose its mode by itself
+- Fixed bug: False variable in plugin.records.php
+- Some little changes in class.window.php
+

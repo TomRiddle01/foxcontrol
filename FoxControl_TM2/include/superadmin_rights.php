@@ -25,4 +25,7 @@ $admin_delete_track = true;
 $admin_delete_record = true;
 $forceSpec = true;
 $ignorePlayer = true;
+$update = true;
+$force_map = true;
+$setCallVote = true;
 ?>

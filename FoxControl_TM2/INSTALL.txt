@@ -21,7 +21,7 @@ If you want to use the Dedimania plugin, do the following steps
 
 1. Open /plugins/config/plugin.dedimania.config.xml
 2. Set your Dedimania Code here <dedi_code></dedi_code>
-   
+
 ********************
 *******UPLOAD*******
 ******************** 

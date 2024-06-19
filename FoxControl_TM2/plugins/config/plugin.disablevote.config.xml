@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>	
+	<enableAutoVote>1</enableAutoVote> 				<!-- 0 = Off, 1 = On, Automatically enables/disables Callvotes if a Admin is on the server or not -->
+	<defaultVoteTimeOut>60</defaultVoteTimeOut>		<!-- Default TimeOut limit for Callvotes in seconds. Will be set when no Admin is on the server -->
+</config>

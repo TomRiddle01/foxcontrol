@@ -1,33 +1,37 @@
 //* UPDATE
-//* Version:   1.1
+//* Version:   1.2
 //* Coded by:  matrix142, cyrilw, Libero, Jens
 //* Copyright: FoxRace, http://www.fox-control.de
 
 **************************
-*******v1.0 -> v1.1*******
+*******v1.1 -> v1.2*******
 **************************
-If you want to update from Stable 1.0 to Stable 1.1 please replace the following files:
+If you want to update from Stable 1.1 to Stable 1.2 please replace the following files:
 
 - control.php
+- config.xml
+- plugins.xml
 
-- include/class.widget.php
+- include/admin_rights.php
+- include/class.foxcontrolplugin.php
 - include/class.window.php
+- include/op_rights.php
+- include/superadmin_rights.php
 
 - plugins/chat.admin.php
-- plugins/plugin.adminpanel.php
-- plugins/plugin.bestmaps.php
-- plugins/plugin.challenges.php
-- plugins/plugin.cpcounter.php
-- plugins/plugin.currentmap.php
+- plugins/plugin.autoupdate.php
 - plugins/plugin.dedimania.php
-- plugins/plugin.jukebox.php
+- plugins/plugin.donate.php
+- plugins/plugin.disablevote.php
 - plugins/plugin.karma.php
+- plugins/plugin.laps.php
 - plugins/plugin.menu.php
-- plugins/plugin.mostactive.php
-- plugins/plugin.norank.php
+- plugins/plugin.newsupdate.php
 - plugins/plugin.players.php
+- plugins/plugin.topdons.php
 - plugins/plugin.records.php
-- plugins/plugin.scorepanel.php
-- plugins/plugin.timelimit.php
 
+- plugins/config/plugin.clock.config.xml
+- plugins/config/plugin.disablevote.config.xml
+- plugins/config/plugin.karma.config.xml
 - plugins/config/plugin.menu.config.xml

@@ -26,6 +26,7 @@ class FoxControlPlugin {
 		$this->classname = $classn;
 		$this->window = $window;
 		$this->widget = $widget;
+		$this->playerList = $this->getPlayerList();
 		//$this->permissions = $this->getPluginInstance('plugin_permissions');
 	}
 	public function registerMLIds($ids) {
@@ -176,6 +177,14 @@ class FoxControlPlugin {
 		$rankName = $this->instance()->getPlayerRankName($login, $color);
 		
 		return $rankName;
+	}
+	public function getPlayerList() {
+		$playerList = $this->instance()->getPlayerList();
+		
+		return $playerList;
+	}
+	public function getCurrentGameMode() {
+		return $this->instance()->getGameMode();
 	}
 }
 ?>

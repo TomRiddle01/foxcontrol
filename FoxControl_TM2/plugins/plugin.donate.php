@@ -1,6 +1,6 @@
 <?php
 //* plugin.donate.php - Donate
-//* Version:   0.4
+//* Version:   1.2
 //* Coded by:  matrix142, cyril, libero
 //* Copyright: FoxRace, http://www.fox-control.de
 
@@ -14,48 +14,49 @@ $donate5 = 3000;
 
 class plugin_donate extends FoxControlPlugin {
 
-	public function onStartUp () {
+	public function onStartUp() {
 		$this->name = 'Donate';
 		$this->author = 'matrix142 & cyril & libero';
-		$this->version = '0.4';
+		$this->version = '1.2';
 		
 		$this->registerMLIds(6);
 		
 		$this->displayDonatePanel();
 	}
 	
-	public function onPlayerConnect ($args) {
+	public function onPlayerConnect($args) {
 		$this->displayDonatePanel($args['Login']);
 	}
 	
-	public function onBeginChallenge ($args) {
+	public function onBeginMap($args) {
 		$this->displayDonatePanel();
 	}
 	
-	public function onEndchallenge($args){
-		$this->displayDonatePanel(false, array(0 => '42.25', 1 => '-80'));
+	public function onEndMap($args){
+		$this->displayDonatePanel(false, array(0 => '42.25', 1 => '0'));
 	}
 	
-	public function displayDonatePanel ($login = false, $posn = array(0 => '0', 1 => '0')) {
+	public function displayDonatePanel($login = false, $posn = array(0 => '0', 1 => '0')) {
 		global $bills, $donate1, $donate2, $donate3, $donate4, $donate5, $settings;
 	
 		$code = '
 		<frame posn="'.$posn[0].' '.$posn[1].' 1">
-		<quad posn="-62 50 1" sizen="7.5 5" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" action="'.$this->mlids[1].'" />
-		<quad posn="-54 50 1" sizen="7.5 5" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" action="'.$this->mlids[2].'" />
-		<quad posn="-46 50 1" sizen="7.5 5" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" action="'.$this->mlids[3].'" />
-		<quad posn="-38 50 1" sizen="7.5 5" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" action="'.$this->mlids[4].'" />
-		<quad posn="-30 50 1" sizen="7.5 5" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" action="'.$this->mlids[5].'" />
-		<quad posn="-62 50 1" sizen="7.5 5" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" action="'.$this->mlids[1].'" />
-		<quad posn="-54 50 1" sizen="7.5 5" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" action="'.$this->mlids[2].'" />
-		<quad posn="-46 50 1" sizen="7.5 5" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" action="'.$this->mlids[3].'" />
-		<quad posn="-38 50 1" sizen="7.5 5" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" action="'.$this->mlids[4].'" />
-		<quad posn="-30 50 1" sizen="7.5 5" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" action="'.$this->mlids[5].'" />
-		<label posn="-58.25 46.75 2" scale="0.8" halign="center" valign="center" text="$o$fff'.$donate1.'" style="TextCardSmallScores2Rank" action="'.$this->mlids[1].'"/>
-		<label posn="-50.25 46.75 2" scale="0.8" halign="center" valign="center" text="$o$fff'.$donate2.'" style="TextCardSmallScores2Rank" action="'.$this->mlids[2].'"/>
-		<label posn="-42.25 46.75 2" scale="0.8" halign="center" valign="center" text="$o$fff'.$donate3.'" style="TextCardSmallScores2Rank" action="'.$this->mlids[3].'"/>
-		<label posn="-34.25 46.75 2" scale="0.8" halign="center" valign="center" text="$o$fff'.$donate4.'" style="TextCardSmallScores2Rank" action="'.$this->mlids[4].'"/>
-		<label posn="-26.25 46.75 2" scale="0.8" halign="center" valign="center" text="$o$fff'.$donate5.'" style="TextCardSmallScores2Rank" action="'.$this->mlids[5].'"/>
+			<quad posn="-62 50 1" sizen="7.5 5" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" action="'.$this->mlids[1].'" />
+			<quad posn="-54 50 1" sizen="7.5 5" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" action="'.$this->mlids[2].'" />
+			<quad posn="-46 50 1" sizen="7.5 5" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" action="'.$this->mlids[3].'" />
+			<quad posn="-38 50 1" sizen="7.5 5" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" action="'.$this->mlids[4].'" />
+			<quad posn="-30 50 1" sizen="7.5 5" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" action="'.$this->mlids[5].'" />
+			<quad posn="-62 50 1" sizen="7.5 5" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" action="'.$this->mlids[1].'" />
+			<quad posn="-54 50 1" sizen="7.5 5" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" action="'.$this->mlids[2].'" />
+			<quad posn="-46 50 1" sizen="7.5 5" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" action="'.$this->mlids[3].'" />
+			<quad posn="-38 50 1" sizen="7.5 5" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" action="'.$this->mlids[4].'" />
+			<quad posn="-30 50 1" sizen="7.5 5" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" action="'.$this->mlids[5].'" />
+			
+			<label posn="-58.25 46.75 2" scale="0.8" halign="center" valign="center" text="$o$fff'.$donate1.'" style="TextCardSmallScores2Rank" action="'.$this->mlids[1].'"/>
+			<label posn="-50.25 46.75 2" scale="0.8" halign="center" valign="center" text="$o$fff'.$donate2.'" style="TextCardSmallScores2Rank" action="'.$this->mlids[2].'"/>
+			<label posn="-42.25 46.75 2" scale="0.8" halign="center" valign="center" text="$o$fff'.$donate3.'" style="TextCardSmallScores2Rank" action="'.$this->mlids[3].'"/>
+			<label posn="-34.25 46.75 2" scale="0.8" halign="center" valign="center" text="$o$fff'.$donate4.'" style="TextCardSmallScores2Rank" action="'.$this->mlids[4].'"/>
+			<label posn="-26.25 46.75 2" scale="0.8" halign="center" valign="center" text="$o$fff'.$donate5.'" style="TextCardSmallScores2Rank" action="'.$this->mlids[5].'"/>
 		</frame>';
 	
 		if($login != false){

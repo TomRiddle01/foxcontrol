@@ -13,7 +13,7 @@ require_once('include/GbxRemote.inc.php');
 define('nz', "\r\n");
 define('FOXC_VERSION', '1.2');
 define('FOXC_VERSIONP', 'TrackMania 2 Stable');
-define('FOXC_BUILD', '2012-12-28');
+define('FOXC_BUILD', '2013-04-08');
 
 error_reporting(E_ALL);
 
@@ -261,8 +261,9 @@ class control {
 			*/
 		
 			$fc_db = $db;
-			global $FoxControl_Reboot;
+			global $FoxControl_Reboot, $FoxControl_Shutdown;
 			$FoxControl_Reboot = false;
+			$FoxControl_Shutdown = false;
 		
 			//Create superadminacc
 			if(trim($settings['AdminTMLogin']) != '' AND trim($settings['AdminTMLogin'] != 'YourLogin')) {
@@ -1081,6 +1082,14 @@ class control {
 		$FoxControl_Reboot = true;
 	}
 	
+	//AUTOUPDATE FOXCONTROL
+	public function FoxControl_shutdown() {
+		global $FoxControl_Shutdown;
+		
+		$this->client->query('SendHideManialinkPage');
+		$FoxControl_Shutdown = true;
+	}
+	
 	//SKIP CHALLENGE
 	public function challenge_skip(){
 		$this->client->query('NextMap');
@@ -1090,7 +1099,7 @@ class control {
 		MAIN LOOP
 	*/
 	public function FoxControl(){
-		global $db, $FoxControl_Reboot, $settings;
+		global $db, $FoxControl_Reboot, $FoxControl_Shutdown, $settings;
 		
 		$defaultcolor = '07b';
 		$newline = "\n";
@@ -1100,7 +1109,7 @@ class control {
 		//MAIN LOOP
 		while(true) {			
 			//STOP FOXCONTROL
-			if($FoxControl_Reboot == true) {
+			if($FoxControl_Reboot == true || $FoxControl_Shutdown == true) {
 				break;
 			}
 			
@@ -1495,6 +1504,15 @@ class control {
 			}
 		}
 		
+		//SHUTDOWN FOXCONTROL
+		if(isset($FoxControl_Shutdown) && $FoxControl_Shutdown == true) {
+			if($settings['socketEnabled'] == true) {
+				socket_close($this->socket);
+			}
+			
+			die();
+		}
+		
 		//$this->client->Terminate(); 
 		//console('Shutting server down..');
 	}
@@ -1618,13 +1636,15 @@ class control {
 	}
 	
 	//WRITE IN CONFIG FILE
-	public function writeInConfig($pathName, $value) {
-		$xml = @simplexml_load_file('config.xml');
+	public function writeInConfig($file, $pathName, $value) {
+		if($xml = simplexml_load_file($file)) {		
+			$xml->$pathName = trim($value);
+			$newXML = $xml->asXML();
 				
-		$xml->$pathName = trim($value);
-		$newXML = $xml->asXML();
-				
-		file_put_contents('config.xml', $newXML);
+			file_put_contents($file, $newXML);
+		} else {
+			console('Can\'t write in '.$file.'!');
+		}
 	}
 }
 

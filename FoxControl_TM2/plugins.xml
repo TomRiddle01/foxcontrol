@@ -28,4 +28,10 @@
 	<plugin>plugin.infomessage.php</plugin>
 	<!-- <plugin>plugin.serverswitch.php</plugin> --> <!-- READ THE INSTRUCTIONS IN plugins/config/plugin.serverswitch.config.xml -->
 	<plugin>plugin.ignorelist.php</plugin>
+	<plugin>plugin.bestmaps.php</plugin>
+	<plugin>plugin.mostactive.php</plugin>
+	<plugin>plugin.widgetsettings.php</plugin>
+	<plugin>plugin.autoupdate.php</plugin>
+	<plugin>plugin.laps.php</plugin>
+	<plugin>plugin.disablevote.php</plugin>
 </plugins>

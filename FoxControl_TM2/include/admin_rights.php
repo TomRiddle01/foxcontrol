@@ -11,7 +11,7 @@ $remove_admin = false;
 $remove_op = true;
 $set_servername = false;
 $set_servercomment = false;
-$reboot_script = true;
+$reboot_script = false;
 $skip_challenge = true;
 $cancel_vote = true;
 $force_end_round = true;
@@ -25,4 +25,7 @@ $admin_delete_track = true;
 $admin_delete_record = true;
 $forceSpec = true;
 $ignorePlayer = true;
+$update = false;
+$force_map = true;
+$setCallVote = true;
 ?>

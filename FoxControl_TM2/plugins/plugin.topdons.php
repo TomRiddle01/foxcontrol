@@ -57,7 +57,7 @@ class plugin_topdons extends FoxControlPlugin {
 		$id = 0;
 		while($row = $sql->fetch_object()) {
 			if($row->donations != 0) {
-				$window->content('<td width="3">'.($id + 1).'</td><td width="18">'.$row->nickname.'</td><td width="15">'.$row->playerlogin.'</td><td width="15">'.$row->donations.'</td>');
+				$window->content('<td width="3">'.($id + 1).'</td><td width="18">'.htmlspecialchars($row->nickname).'</td><td width="15">'.$row->playerlogin.'</td><td width="15">'.$row->donations.'</td>');
 			
 				$id++;
 			}

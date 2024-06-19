@@ -1,7 +1,7 @@
 <?php
 //* plugin.karma.php - Track Karma
-//* Version:   0.4
-//* Coded by:  cyrilw, libero6
+//* Version:   1.2
+//* Coded by:  matrix142
 //* Copyright: FoxRace, http://www.fox-control.de
 
 class plugin_karma extends FoxControlPlugin {
@@ -13,7 +13,7 @@ class plugin_karma extends FoxControlPlugin {
 	
 		$this->name = 'Track Karma';
 		$this->author = 'matrix142';
-		$this->version = '0.5';
+		$this->version = '1.2';
 	
 		$this->registerMLIds(5);
 		
@@ -24,31 +24,8 @@ class plugin_karma extends FoxControlPlugin {
 		$this->registerCommand('-', 'Votes $s-$s for the current track.', false);
 		$this->registerCommand('--', 'Votes $s--$s for the current track.', false);
 		
-		$this->config = $this->loadConfig();
-		$posn_karma = $this->getPosn('karma');
-		
-		/*
-			CHANGE WIDGET STYLE HERE
-		*/
-		if($posn_karma != false) {
-			$widget_code_karma = '
-			<quad posn="'.$posn_karma[0].' '.$posn_karma[1].' 1" sizen="16 6.5" halign="center" valign="center" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" />
-			<quad posn="'.$posn_karma[0].' '.($posn_karma[1]-2).' 0" sizen="16 2.5" halign="center" valign="center" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" />
-			
-			<label posn="'.($posn_karma[0]-3.7).' '.($posn_karma[1]-1.3).' 2" text="$o$FFF5" scale="0.5" style="TextButtonBig" action="'.$this->mlids[4].'" />
-			<label posn="'.($posn_karma[0]-2.2).' '.($posn_karma[1]-1.3).' 2" text="$o$FFF4" scale="0.5" style="TextButtonBig" action="'.$this->mlids[3].'" />
-			<label posn="'.($posn_karma[0]-0.7).' '.($posn_karma[1]-1.3).' 2" text="$o$FFF3" scale="0.5" style="TextButtonBig" action="'.$this->mlids[2].'"/>
-			<label posn="'.($posn_karma[0]+0.8).' '.($posn_karma[1]-1.3).' 2" text="$o$FFF2" scale="0.5" style="TextButtonBig" action="'.$this->mlids[1].'"/>
-			<label posn="'.($posn_karma[0]+2.3).' '.($posn_karma[1]-1.3).' 2" text="$o$FFF1" scale="0.5" style="TextButtonBig" action="'.$this->mlids[0].'"/>
-			
-			<label posn="'.($posn_karma[0]+3.8).' '.($posn_karma[1]-1.3).' 2" text="$o$F00-" scale="0.5" style="TextButtonBig"/>
-			<label posn="'.($posn_karma[0]-6.2).' '.($posn_karma[1]-1.3).' 2" text="$o$1A0+" scale="0.5" style="TextButtonBig" />
-			
-			<label posn="'.($posn_karma[0]-7.2).' '.($posn_karma[1]+2.45).' 2" text="$o$FFF{VOTE_AVERAGE}" sizen="5 2" scale="0.8" style="TextButtonBig" />
-			<label posn="'.($posn_karma[0]-0.7).' '.($posn_karma[1]+2.45).' 2" text="$FFF{VOTES}" sizen="10 2" scale="0.6" style="TextButtonBig"/>';
-		}
-		
-		$this->onBeginChallenge(false);
+		$this->config = $this->loadConfig();		
+		$this->onBeginMap(false);
 	}
 	
 	/*
@@ -74,23 +51,51 @@ class plugin_karma extends FoxControlPlugin {
 	}
 	
 	/*
-		BEGIN CHALLENGE
+		BEGIN MAP
 	*/
-	public function onBeginChallenge($args) {
-		global $posn_karma;
+	public function onBeginMap($args, $endMap = false) {
+		global $posn_karma, $widget_code_karma, $settings;
 	
+		$this->getKarma();
+		$playerList = $this->getPlayerList();
+	
+	
+		if($endMap == true) {
+			$posn_karma = array();
+			$posn_karma[0] = 50.3;
+			$posn_karma[1] = 31;
+		} else {
+			$posn_karma = $this->getPosn('karma');
+		}
+		
+		/*
+			CHANGE WIDGET STYLE HERE
+		*/
 		if($posn_karma != false) {
-			$this->getKarma();
+			$widget_code_karma = '
+			<quad posn="'.$posn_karma[0].' '.$posn_karma[1].' 0" sizen="15 9" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" />
+			<quad posn="'.$posn_karma[0].' '.$posn_karma[1].' 1" sizen="15 3" style="'.$settings['default_style1'].'" substyle="'.$settings['default_substyle1'].'"/>
+			<quad posn="'.$posn_karma[0].' '.$posn_karma[1].' 1" sizen="15 3" style="'.$settings['default_style1'].'" substyle="'.$settings['default_substyle1'].'"/>
+			<quad posn="'.$posn_karma[0].' '.($posn_karma[1] - 6.65).' 1" sizen="15 2.5" style="'.$settings['default_style2'].'" substyle="'.$settings['default_substyle2'].'" />
+			<label posn="'.($posn_karma[0] + 0.5).' '.($posn_karma[1] - 0.7).' 2" textsize="1" text="$oMap Karma"/>
 			
-			$this->instance()->client->query('GetPlayerList', 200, 0);
-			$playerList = $this->instance()->client->getResponse();
-				
-			$i = 0;
-			while(isset($playerList[$i])) {
-				$this->displayKarma($playerList[$i]['Login']);
-				
-				$i++;
+			<label posn="'.($posn_karma[0]+3.8).' '.($posn_karma[1]-7.35).' 2" text="$o$FFF5" scale="0.5" action="'.$this->mlids[4].'" />
+			<label posn="'.($posn_karma[0]+5.3).' '.($posn_karma[1]-7.35).' 2" text="$o$FFF4" scale="0.5" action="'.$this->mlids[3].'" />
+			<label posn="'.($posn_karma[0]+6.8).' '.($posn_karma[1]-7.35).' 2" text="$o$FFF3" scale="0.5" action="'.$this->mlids[2].'"/>
+			<label posn="'.($posn_karma[0]+8.3).' '.($posn_karma[1]-7.35).' 2" text="$o$FFF2" scale="0.5" action="'.$this->mlids[1].'"/>
+			<label posn="'.($posn_karma[0]+9.8).' '.($posn_karma[1]-7.35).' 2" text="$o$FFF1" scale="0.5" action="'.$this->mlids[0].'"/>
+			
+			<label posn="'.($posn_karma[0]+11.3).' '.($posn_karma[1]-7.35).' 2" text="$o$F00-" scale="0.5" />
+			<label posn="'.($posn_karma[0]+2.3).' '.($posn_karma[1]-7.35).' 2" text="$o$1A0+" scale="0.5" />
+			
+			<label posn="'.($posn_karma[0]+1.8).' '.($posn_karma[1]-3.3).' 2" text="$o$FFF{VOTE_AVERAGE}" sizen="5 2" scale="0.8" />
+			<label posn="'.($posn_karma[0]+8.3).' '.($posn_karma[1]-3.3).' 2" text="$FFF{VOTES}" sizen="10 2" scale="0.6" />';
+			
+			foreach($playerList as $key => $value) {
+				$this->displayKarma($key);
 			}
+		} else {
+			$this->closeMl($this->mlids[0]);
 		}
 	}
 	
@@ -102,6 +107,17 @@ class plugin_karma extends FoxControlPlugin {
 	
 		if($posn_karma != false) {			
 			$this->displayKarma($args['Login']);
+		}
+	}
+	
+	/*
+		END MAP
+	*/
+	public function onEndMap($args) {
+		if($this->config->settings->general->show_on_end == '1') {			
+			$this->onBeginMap(false, true);
+		} else {
+			$this->closeMl($this->mlids[0]);
 		}
 	}
 	
@@ -138,9 +154,9 @@ class plugin_karma extends FoxControlPlugin {
 		$mysql = mysqli_query($this->db, "SELECT * FROM `karma` WHERE challengeid = '".$kar_challinfo['UId']."' AND playerlogin = 'karma_total'");
 		
 		if($row = $mysql->fetch_object()) {
-			$sql2 = mysqli_query($this->db, "UPDATE karma SET vote = '".$karmavote."', timestamp = '".time()."' WHERE challengeid = '".$kar_challinfo['UId']."' AND playerlogin = 'karma_total'");
+			$sql2 = mysqli_query($this->db, "UPDATE `karma` SET vote = '".$karmavote."', timestamp = '".time()."' WHERE challengeid = '".$kar_challinfo['UId']."' AND playerlogin = 'karma_total'");
 		} else {
-			$sql = mysqli_query($this->db, "INSERT INTO karma (challengeid, challengename, playerlogin, vote, timestamp) VALUES ('".$kar_challinfo['UId']."', '".$kar_challinfo['Name']."', 'karma_total', '".$karmavote."', '".time()."')");
+			$sql = mysqli_query($this->db, "INSERT INTO `karma` (challengeid, challengename, playerlogin, vote, timestamp, challengefilename) VALUES ('".$kar_challinfo['UId']."', '".$kar_challinfo['Name']."', 'karma_total', '".$karmavote."', '".time()."', '".$kar_challinfo['FileName']."')");
 		}
 	}
 	
@@ -167,17 +183,17 @@ class plugin_karma extends FoxControlPlugin {
 		
 			$karmavote = round($karmavote);
 			
-			$x = $posn_karma[0] + 2.65;
-			$y = $posn_karma[1] + 0.95;
+			$x = $posn_karma[0] + 11.65;
+			$y = $posn_karma[1] - 4.8;
 			
 			for($i=0; $i<$karmavote; $i++) {
-				$karma_code .= '<quad posn="'.$x.' '.$y.' 4" sizen="2 2" style="BgRaceScore2" halign="center" substyle="Fame" />';
+				$karma_code .= '<quad posn="'.$x.' '.$y.' 4" sizen="2 2" style="Icons128x128_1" halign="center" substyle="Vehicles" />';
 				$x -= 1.5;
 			}
 			
 			if(isset($karma_vote_pos)) {
-				$x_num = $posn_karma[0] + 2.5 - $karma_vote_pos;
-				$y_num = $posn_karma[1] - 0.55;
+				$x_num = $posn_karma[0] + 9.9 - $karma_vote_pos;
+				$y_num = $posn_karma[1] - 6.65;
 				
 				$karma_code .= '<quad posn="'.$x_num.' '.$y_num.' 2" sizen="2.5 2.5" style="Icons64x64_1" substyle="LvlGreen" />';
 			}
@@ -186,10 +202,9 @@ class plugin_karma extends FoxControlPlugin {
 			$karma_code = str_replace('{VOTES}', '', $karma_code);
 			$karma_code = str_replace('{VOTE_AVERAGE}', '', $karma_code);
 			
-			$karma_code .= '<label posn="'.($posn_karma[0]-4.7).' '.($posn_karma[1]+1.7).' 3" scale="0.6" text="$fff$oNo votes yet"/>';
+			$karma_code .= '<label posn="'.($posn_karma[0]+4.3).' '.($posn_karma[1]-4.25).' 3" scale="0.6" text="$fff$oNo votes yet"/>';
 		}
 		
-		//Display Karma Widget
 		$this->displayManialinkToLogin($login, $karma_code, $this->mlids[0]);
 	}
 	
@@ -218,20 +233,36 @@ class plugin_karma extends FoxControlPlugin {
 				$sql2 = mysqli_query($this->db, "UPDATE karma SET vote = '".$vote."', timestamp = '".time()."' WHERE challengeid = '".$kar_challinfo['UId']."' AND playerlogin = '".$args[1]."'");
 			
 				if($this->config->settings->general->show_message == '1') {
-					$color = $this->config->settings->color->color_voted;
-					$this->chat($playerInfo['NickName'].'$z$s'.$color.' voted $fff'.$vote.''.$color.'!', $color);
+					$this->chatVoteMessage($playerInfo['NickName'], $vote);
 				}
 			} else {
-				$sql2 = mysqli_query($this->db, "INSERT INTO karma (challengeid, challengename, playerlogin, vote, timestamp) VALUES ('".$kar_challinfo['UId']."', '".$kar_challinfo['Name']."', '".$args[1]."', '".$vote."', '".time()."')");
+				$sql2 = mysqli_query($this->db, "INSERT INTO `karma` (challengeid, challengename, playerlogin, vote, timestamp) VALUES ('".$kar_challinfo['UId']."', '".$kar_challinfo['Name']."', '".$args[1]."', '".$vote."', '".time()."')");
 			
 				if($this->config->settings->general->show_message == '1') {
-					$color = $this->config->settings->color->color_voted;
-					$this->chat($playerInfo['NickName'].'$z$s'.$color.' voted $fff'.$vote.''.$color.'!', $color);
+					$this->chatVoteMessage($playerInfo['NickName'], $vote);
 				}
 			}
 			
-			$this->onBeginChallenge(false);
+			$this->onBeginMap(false);
 		}
+	}
+	
+	protected function chatVoteMessage($nickname, $vote) {
+		if($vote == 5) {
+			$rating = $this->config->settings->messages->very_good;
+		} else if($vote == 4) {
+			$rating = $this->config->settings->messages->good;
+		} else if($vote == 3) {
+			$rating = $this->config->settings->messages->average;
+		} else if($vote == 2) {
+			$rating = $this->config->settings->messages->bad;
+		} else if($vote == 1) {
+			$rating = $this->config->settings->messages->very_bad;
+		}
+		
+		$color = $this->config->settings->color->color_voted;
+		
+		$this->chat($nickname.'$z$s'.$color.' thinks this map is $fff'.$rating.$color.'!', $color);
 	}
 }
 ?>
