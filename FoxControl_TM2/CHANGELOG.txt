@@ -1,0 +1,18 @@
+//* Changelog
+//* Version:   0.7
+//* Coded by:  matrix142, cyrilw, Libero, Jens
+//* Copyright: FoxRace, http://www.fox-control.de
+
+**************************
+*******v0.6 -> v0.7*******
+**************************
+- New Plugin: plugin.serverswitch.php => Serverswitch Plugin
+- Bug fix: plugin.scorepanel.php => Most active hasn't been updated
+- Bug fix: plugin.records.php => LiveRankings weren't updated
+- Bug fix: plugin.topdons.php => TopDons weren't correctly displayed
+- Bug fix: plugin.simple_buttons.php => Links didn't work correctly
+- Changes: chat.admin.php => Maps with custom GameModes can be added now
+- Changes: plugin.adminpanel.php => Little adaption
+- Changes: class.widget.php => Little adaptions
+- Changes: plugin.player.php => Little adaption
+- Changes: ScriptMode integrated

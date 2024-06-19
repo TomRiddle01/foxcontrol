@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<plugins>
+	<plugin>chat.admin.php</plugin> <!-- DO NOT DEACTIVATE THIS! -->
+	<plugin>chat.player.php</plugin>
+	<plugin>chat.pm.php</plugin>
+	<plugin>chat.format.php</plugin>
+	<plugin>manager.plugins.php</plugin>
+	<plugin>plugin.currentchallenge.php</plugin>
+	<plugin>plugin.simple_buttons.php</plugin>
+	<plugin>plugin.adminpanel.php</plugin>
+	<plugin>plugin.menu.php</plugin>
+	<plugin>plugin.donate.php</plugin>
+	<plugin>plugin.clock.php</plugin>
+	<plugin>plugin.records.php</plugin>
+	<plugin>plugin.dedimania.php</plugin>
+	<plugin>plugin.challenges.php</plugin>
+	<plugin>plugin.jukebox.php</plugin>
+	<plugin>plugin.karma.php</plugin>
+	<plugin>plugin.players.php</plugin>
+	<plugin>plugin.scorepanel.php</plugin>
+	<!-- <plugin>plugin.timelimit.php</plugin> -->
+	<plugin>plugin.banlist.php</plugin>
+	<plugin>plugin.topdons.php</plugin>
+	<plugin>plugin.norank.php</plugin>
+	<plugin>plugin.newsupdate.php</plugin>
+	<plugin>plugin.search.php</plugin>
+	<!-- <plugin>plugin.music.php</plugin> -->
+	<plugin>plugin.infomessage.php</plugin>
+	<!-- <plugin>plugin.serverswitch.php</plugin> --> <!-- READ THE INSTRUCTIONS IN plugins/config/plugin.serverswitch.config.xml -->
+</plugins>

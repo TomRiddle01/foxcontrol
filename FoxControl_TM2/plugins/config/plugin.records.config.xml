@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<config>
+	<!-- SET HERE THE POSN OF THE WIDGETS -->
+	<posns>
+		<!-- POSN OF LOCALRECS WIDGET -->
+		<local_recs>
+			<rounds>-58 26</rounds>				<!-- ROUNDS -->
+			<timeattack>-58 26</timeattack>		<!-- TIMEATTACK -->
+			<team>-58 26</team> 				<!-- TEAM -->
+			<laps>-58 26</laps> 				<!-- LAPS -->
+			<cup>-58 26</cup> 					<!-- CUP -->
+			<!-- <stunts>-58 26</stunts> -->	<!-- STUNTS -->
+			<!-- <Platform>-58 26</Platform> --><!-- PLATFORM -->
+		</local_recs>
+		<!-- POSN OF LIVE RANKINGS WIDGET -->
+		<live_ranks>
+			<!-- <rounds>58 15</rounds> -->		<!-- ROUNDS -->
+			<timeattack>58 15</timeattack> 		<!-- TIMEATTACK -->
+			<!-- <team>58 15</team> -->			<!-- TEAM -->
+			<laps>58 15</laps> 					<!-- LAPS -->
+			<!-- <cup>58 15</cup> --> 			<!-- CUP -->
+			<!-- <stunts>58 15</stunts> --> 	<!-- STUNTS -->
+			<!-- <Platform>58 15</Platform> -->	<!-- PLATFORM -->
+		</live_ranks>
+	</posns>
+	
+	<settings>
+		<!-- GENERAL -->
+		<general>
+			<show_message>1</show_message> <!-- 1 = TO ALL; 2 = ONLY TO PLAYER; 0 = NO MESSAGE -->
+		</general>
+		<!-- COLOR -->
+		<color>
+			<color_newlocal>$0d0</color_newlocal> <!-- DEFAULT COLOR OF NEW LOCAL MESSAGE -->
+		</color>
+		<!-- NAMES -->
+		<names>
+			<headline_local_widget>Local Records</headline_local_widget> <!-- NAME OF LOCAL RECORDS WIDGET -->
+			<headline_live_widget>Live Rankings</headline_live_widget> <!-- NAME OF LIVE RANKINGS WIDGET -->
+		</names>
+	</settings>
+</config>
+	

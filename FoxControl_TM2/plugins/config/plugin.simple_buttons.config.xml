@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+	<buttons>
+		<!-- IMPORTANT!!: If you don't use a field (example imagefocus) then left it clean but DON'T CLEAR IT! -->
+		<!-- LINKSTYLE CAN BE url FOR A WEBSITE URL OR manialink FOR A INGAME MANIALINK -->
+
+		<!-- <size>10 2</size>
+		<pos>54 41</pos>
+		<image>http://img214.imageshack.us/img214/7261/foxcontrol.png</image>
+		<imagefocus>http://img16.imageshack.us/img16/1875/foxcontrol2.png</imagefocus>
+		<linkstyle>url</linkstyle>
+		<link>http://fox-control.de</link> -->		
+	</buttons>

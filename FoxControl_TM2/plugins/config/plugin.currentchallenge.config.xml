@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<config>
+	<!-- SET HERE THE POSN OF THE WIDGET -->
+	<posn>44.5 48.125</posn>
+	
+	<settings>
+		<!-- NAMES -->
+		<names>
+			<headline_current_challenge>Current Challenge</headline_current_challenge> <!-- NAME OF CURRENT CHALLENGE -->
+			<headline_next_challenge>Next Challenge</headline_next_challenge> <!-- NAME OF NEXT CHALLENGE -->
+		</names>
+	</settings>
+</config>
+	

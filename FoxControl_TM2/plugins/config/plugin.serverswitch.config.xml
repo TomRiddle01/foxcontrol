@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<config>
+	<!-- SET HERE THE POSN OF THE WIDGETS -->
+	<posns>
+		<!-- POSN OF THE WIDGET -->
+		<serverswitch>
+			<rounds>-56.25 37</rounds>			<!-- ROUNDS -->
+			<timeattack>-56.25 37</timeattack> 	<!-- TIMEATTACK -->
+			<team>-56.25 37</team> 				<!-- TEAM -->
+			<laps>-56.25 37</laps> 				<!-- LAPS -->
+			<cup>-56.25 37</cup> 				<!-- CUP -->
+			<stunts>-56.25 37</stunts> 			<!-- STUNTS -->
+			<Platform>56.25 -38.25</Platform> 	<!-- STUNTS -->
+		</serverswitch>
+	</posns>
+	
+	<!-- INSERT THE DATABASE DATA OF THE GLOBAL SERVERSWITCH DATABASE -->
+	<!--
+	1. CREATE A NEW EMPTY DATABASE WITH YOUR MYSQL ADMIN TOOL (E.G. PHPMYADMIN)
+	2. INSERT THE DATABASE DATA INTO EVERY CONFIG FILE OF THE SERVERSWITCH PLUGIN ON EACH SERVER YOU WISH TO HAVE THIS PLUGIN RUNNING
+	3. ENJOY :)
+	-->
+	<database>
+		<host>localhost</host>		<!-- Normally localhost, but can be also an external Domain/IP -->
+		<user>DBUSER</user>			<!-- Username of your Database -->
+		<pass>DBPASS</pass>			<!-- Password of your Database -->
+		<name>DBNAME</name>			<!-- Name of your Database -->
+	</database>
+</config>

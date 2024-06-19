@@ -1,0 +1,13 @@
+//* UPDATE
+//* Version:   0.7
+//* Coded by:  matrix142, cyrilw, Libero, Jens
+//* Copyright: FoxRace, http://www.fox-control.de
+
+**************************
+*******v0.6 -> v0.7*******
+**************************
+
+Please do a clean new installation!
+All files have been changed.
+
+You can use your old config file and database.

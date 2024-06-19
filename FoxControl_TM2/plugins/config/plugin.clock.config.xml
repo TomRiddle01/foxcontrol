@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<config>
+	<!-- SET HERE THE POSN OF THE WIDGET -->
+	<posn>50.3 35</posn>
+	
+	<settings>
+		<show_date>true</show_date> <!-- Show Date under the clock. True = true, False = false -->
+	</settings>
+</config>
+	

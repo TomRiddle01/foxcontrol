@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<config>
+	<!-- SET HERE THE POSN OF THE WIDGETS -->
+	<posns>
+		<dedi_widget>
+			<!-- <script>-58 23</script> --> <!-- SCRIPT -->
+			<rounds>-58 -5.5</rounds> <!-- ROUNDS -->
+			<timeattack>-58 -5.5</timeattack> <!-- TIMEATTACK -->
+			<!-- <team>-58 23</team> --> <!-- TEAM -->
+			<!-- <laps>-58 23</laps> --> <!-- LAPS -->
+			<cup>-58 -5.5</cup> <!-- CUP -->
+			<!-- <stunts>-58 23</stunts> --> <!-- STUNTS -->
+		</dedi_widget>
+	</posns>
+	
+	<settings>
+		<!-- GENERAL -->
+		<general>
+			<dedi_code>48a8fb51a6</dedi_code> <!-- DEDIMANIA CODE FROM http://dedimania.net/tm2stats/?do=register FOR THE SERVERLOGIN -->
+			<dedi_url>http://dedimania.net:8082/Dedimania</dedi_url> <!-- URL TO THE DEDIMANIA WEBSERVER. DEFAULT http://dedimania.net:8082/Dedimania -->
+		</general>
+		<!-- MESSAGE -->
+		<message>
+			<show_message>1</show_message> <!-- 1 = TO ALL; 2 = ONLY TO PLAYER; 0 = NO MESSAGE -->
+		</message>
+		<!-- COLOR -->
+		<color>
+			<color_newdedi>$0a0</color_newdedi> <!-- DEFAULT COLOR OF NEW DEDI RECORD MESSAGE -->
+		</color>
+		<!-- NAMES -->
+		<names>
+			<headline_dedi_widget>Dedimania</headline_dedi_widget> <!-- NAME OF DEDI RECORDS WIDGET -->
+		</names>
+	</settings>
+</config>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<config>
+	<!-- SET HERE THE POSN OF THE WIDGETS -->
+	<posns>
+		<!-- POSN OF THE WIDGET -->
+		<karma>
+			<rounds>58.2 27.3</rounds> 			<!-- ROUNDS -->
+			<timeattack>58.2 27.3</timeattack> 	<!-- TIMEATTACK -->
+			<team>58.2 27.3</team> 				<!-- TEAM -->
+			<laps>58.2 27.3</laps> 				<!-- LAPS -->
+			<cup>58.2 27.3</cup> 				<!-- CUP -->
+			<stunts>58 27.3</stunts> 			<!-- STUNTS -->
+			<Platform>58 27.3</Platform> 		<!-- PLATFORM -->
+		</karma>
+	</posns>
+	
+	<settings>
+		<!-- GENERAL -->
+		<general>
+			<show_message>1</show_message> <!-- 1 = TO ALL; 2 = ONLY TO PLAYER; 0 = NO MESSAGE -->
+		</general>
+		<!-- COLOR -->
+		<color>
+			<color_voted>$0d0</color_voted> <!-- DEFAULT COLOR FOR VOTING MESSAGE -->
+		</color>
+	</settings>
+</config>
+	

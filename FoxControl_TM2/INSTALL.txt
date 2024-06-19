@@ -1,0 +1,34 @@
+//* Installation
+//* Version:   0.5
+//* Coded by:  matrix142, cyrilw, Libero, Jens
+//* Copyright: FoxRace, http://www.fox-control.de
+
+********************
+*****config.xml*****
+********************
+1. Edit your config.xml like the description in the file.
+
+********************
+*****control.sh*****
+********************
+1. cd /home/foxrace/FoxControl
+   Set this path to the path where your FoxControl data is located
+
+********************
+******Dedimania*****
+********************
+If you want to use the Dedimania plugin, do the following steps
+
+1. Open /plugins/config/plugin.dedimania.config.xml
+2. Set your Dedimania Code here <dedi_code></dedi_code>
+   
+********************
+*******UPLOAD*******
+******************** 
+1. Upload all files to your server
+   
+********************
+********CHMOD*******
+********************
+1. Set CHMOD 777 to your FoxControl Folder
+2. Set CHMOD 777 to /var/run/FoxControl.pid

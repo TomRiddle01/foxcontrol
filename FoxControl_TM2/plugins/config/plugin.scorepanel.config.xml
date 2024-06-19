@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<config>
+	<!-- SET HERE THE POSN OF THE WIDGETS -->
+	<posns>
+		<top_donate>-64.5 51</top_donate>
+		<top_tracks>25.5 51</top_tracks>
+		<most_active>-44.5 51</most_active>
+		<next_track>45.5 51</next_track>
+		<local_records>-64.5 28.5</local_records>
+		<dedi_records>46 17.5</dedi_records>
+	</posns>
+	
+	<settings>
+		<!-- NAMES -->
+		<names>
+			<headline_top_donate>Top Donators</headline_top_donate> <!-- NAME OF TOP DONATE -->
+			<headline_top_tracks>Best Tracks</headline_top_tracks> <!-- NAME OF TOP TRACKS -->
+			<headline_most_active>Most Active</headline_most_active> <!-- NAME OF MOST ACTIVE -->
+			<headline_next_track>Next Track</headline_next_track> <!-- NAME OF NEXT TRACK -->
+			<headline_local_records>Local records</headline_local_records> <!-- NAME OF LOCAL RECORDS -->
+			<headline_dedi_records>Dedimania</headline_dedi_records> <!-- NAME OF DEDI RECORDS -->
+		</names>
+	</settings>
+</config>
+	

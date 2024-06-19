@@ -1,0 +1,14 @@
+<plugin_infomessage>
+	<general>
+		<duration>0</duration> <!-- Set here the number of rounds after that a message will appear -->
+	</general>
+
+	<messages>
+		<message>Type in $i/help$i to get a list of all available commands</message>
+		<message>You can hide panels by clicking on the $iX$i</message>
+		<message>To get a list of tracks without a record, type in $i/norank$i</message>
+		<message>Have a look at the top donators! $i/topdons$i</message>
+		<message>To set your own panel style, click on the settings icon of a panel</message>
+		<message>Press F7 to hide all panels</message>
+	</messages>
+</plugin_infomessage>

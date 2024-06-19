@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<config>
+    <url>http://example.org/</url> <!-- Set here the URL to your Webspace where your music files are. Begin with http:// and end with / -->
+  
+	<songs>
+		<song>Song1.ogg</song><name>Song1</name>
+	</songs>
+</config>
